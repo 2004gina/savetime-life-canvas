@@ -204,7 +204,7 @@ export function Segmented<T extends string>({
 export function Avatar({ name, tone = "ink", className }: { name: string; tone?: "ink" | "accent" | "muted"; className?: string }) {
   const t = { ink: "bg-primary text-primary-foreground", accent: "bg-accent-soft text-accent-deep", muted: "bg-surface-2 text-muted-foreground" }[tone];
   return (
-    <span className={cn("grid size-9 shrink-0 place-items-center rounded-full text-sm font-extrabold", t, className)}>
+    <span className={cn("grid size-10 shrink-0 place-items-center rounded-2xl text-sm font-extrabold shadow-[var(--shadow-card)]", t, className)}>
       {name.slice(0, 2)}
     </span>
   );
@@ -218,7 +218,7 @@ export function IconTile({ children, tone = "accent", className }: { children: R
     warn: "bg-warning-soft text-warning",
     ok: "bg-success-soft text-success",
   }[tone];
-  return <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", t, className)}>{children}</span>;
+  return <span className={cn("grid size-11 shrink-0 place-items-center rounded-2xl", t, className)}>{children}</span>;
 }
 
 /** 3단계 입력 같은 진행 점 ( patient 화면 ) */
