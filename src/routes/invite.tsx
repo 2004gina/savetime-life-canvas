@@ -66,7 +66,7 @@ function InvitePage() {
     <PhoneScreen
       title="팀 초대"
       subtitle={`${a.incoming.length}건 · 5분 안에 답해야 해요`}
-      badge={<Pill tone="wait" dot={false} className="bg-primary-foreground/12 text-primary-foreground/85">답변 필요</Pill>}
+      badge={<Pill tone="wait" dot={false} className="bg-primary/8 text-primary">답변 필요</Pill>}
       footer={<BigButton variant="outline" onClick={() => nav({ to: "/" })}>홈으로</BigButton>}
     >
       {a.incoming.map((inv) => {

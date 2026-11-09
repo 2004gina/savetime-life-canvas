@@ -95,7 +95,7 @@ function DutyPage() {
     <PhoneScreen
       title="근무 시작"
       subtitle={`${me.name} ${me.rank} · ${me.orgName} ${me.center}`}
-      badge={<Pill tone="neutral" dot={false} className="bg-primary-foreground/12 text-primary-foreground/80">{members.length + 1}/{TEAM_MAX}명</Pill>}
+      badge={<Pill tone="neutral" dot={false} className="bg-primary/8 text-primary">{members.length + 1}/{TEAM_MAX}명</Pill>}
       footer={
         <div className="space-y-2">
           <BigButton size="lg" onClick={start}>{mode === "new" ? "팀 만들고 근무 시작" : "이 팀으로 근무 시작"}</BigButton>

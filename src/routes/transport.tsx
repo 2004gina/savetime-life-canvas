@@ -58,7 +58,7 @@ function TransportPage() {
     <PhoneScreen
       title={near ? `${h.name} 응급실 입구` : `${h.name} · ${left}분 남음`}
       subtitle={near ? "응급실 입구 30m 안이에요" : "이송 중 · 위치 기록 (화면 맨 위 표시 중)"}
-      badge={<Pill tone={near ? "ok" : "call"} dot={false} className="bg-primary-foreground/12 text-primary-foreground/85">{h.km}km</Pill>}
+      badge={<Pill tone={near ? "ok" : "call"} dot={false} className="bg-primary/8 text-primary">{h.km}km</Pill>}
       footer={
         <div className="space-y-2">
           {near ? (
