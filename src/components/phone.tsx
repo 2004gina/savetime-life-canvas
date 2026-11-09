@@ -44,7 +44,7 @@ export function PhoneScreen({
     <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-background">
       <header
         className={cn(
-          "surface-header relative overflow-hidden border-b border-border/60 px-5 pb-6 pt-5",
+          "surface-header relative overflow-hidden border-b border-border/50 px-5 pb-7 pt-6",
           accent ? "bg-[image:var(--gradient-accent)] text-primary-foreground" : "text-foreground",
           dim && "opacity-60",
         )}
@@ -55,17 +55,17 @@ export function PhoneScreen({
         <EcgLine className={cn("absolute -right-4 bottom-1 w-44", accent ? "text-primary-foreground/30" : "text-accent/45")} />
         <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="text-[22px] leading-tight font-extrabold tracking-tight">{title}</h1>
+            <h1 className="text-[23px] leading-tight font-extrabold tracking-[-0.02em]">{title}</h1>
             {subtitle && <p className={cn("mt-1.5 text-sm leading-snug", accent ? "text-primary-foreground/70" : "text-muted-foreground")}>{subtitle}</p>}
           </div>
           {badge && <div className="shrink-0 pt-0.5">{badge}</div>}
         </div>
       </header>
 
-      <main className="flex-1 px-5 pb-10 pt-5">{children}</main>
+      <main className="flex-1 px-5 pb-12 pt-6">{children}</main>
 
       {footer && (
-        <footer className="elevate-lg sticky bottom-0 z-30 border-t border-border/70 bg-card/85 px-5 pb-[max(1.15rem,env(safe-area-inset-bottom))] pt-3.5 backdrop-blur-md">
+        <footer className="sticky bottom-0 z-30 border-t border-border/60 bg-card/80 px-5 pb-[max(1.15rem,env(safe-area-inset-bottom))] pt-3.5 backdrop-blur-xl">
           {footer}
         </footer>
       )}
@@ -76,15 +76,15 @@ export function PhoneScreen({
 /** 구역 제목: 작게 빼고 아래 칸과 선으로 묶음 */
 export function SectionTitle({ children, hint, action }: { children: ReactNode; hint?: ReactNode; action?: ReactNode }) {
   return (
-    <div className="mt-7 mb-2.5 first:mt-0">
+    <div className="mt-8 mb-3 first:mt-0">
       <div className="flex items-end justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-[15px] font-extrabold tracking-tight text-foreground">
-          <span className="h-3.5 w-[3px] shrink-0 rounded-full bg-accent" />
+        <h2 className="flex items-center gap-2 text-[15px] font-extrabold tracking-[-0.01em] text-foreground">
+          <span className="h-3.5 w-[3.5px] shrink-0 rounded-full bg-accent shadow-[var(--shadow-accent)]" />
           {children}
         </h2>
         {action}
       </div>
-      {hint && <p className="mt-1 pl-[11px] text-xs leading-relaxed text-muted-foreground">{hint}</p>}
+      {hint && <p className="mt-1.5 pl-[11px] text-xs leading-relaxed text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -106,7 +106,7 @@ export function Pill({ tone, children, dot = true, className }: { tone: Tone; ch
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
+        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold tracking-[-0.01em]",
         toneCls[tone],
         className,
       )}
@@ -155,8 +155,8 @@ export function BigButton({
   return (
     <button
       className={cn(
-        "inline-flex w-full items-center justify-center gap-1.5 rounded-xl font-bold tracking-tight transition",
-        "active:translate-y-px active:scale-[0.995] disabled:cursor-not-allowed disabled:shadow-none",
+        "inline-flex w-full items-center justify-center gap-1.5 rounded-2xl font-bold tracking-[-0.01em] transition",
+        "active:translate-y-px active:scale-[0.99] disabled:cursor-not-allowed disabled:shadow-none",
         variant === "outline" && "disabled:border-border disabled:bg-surface disabled:text-muted-foreground/60",
         variant === "primary" && "disabled:bg-muted disabled:text-muted-foreground/50",
         (variant === "accent" || variant === "success") && "disabled:opacity-45",
@@ -182,7 +182,7 @@ export function Segmented<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={cn("flex gap-1 rounded-xl border border-border bg-surface-2 p-1", className)}>
+    <div className={cn("flex gap-1 rounded-2xl border border-border/70 bg-surface-2 p-1", className)}>
       {options.map((o) => (
         <button
           key={o.value}
