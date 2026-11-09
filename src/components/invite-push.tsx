@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { Ambulance, X } from "lucide-react";
+import { Ambulance, X, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth, getAuth, setAuth, demoInvite, expiredInvites, type Incoming } from "@/lib/auth-store";
 
@@ -59,23 +59,24 @@ export function InvitePush() {
 
   return (
     <div className="push-in fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3">
-      <div className="flex w-full max-w-[420px] items-start gap-3 rounded-2xl border bg-card/95 p-3 shadow-2xl backdrop-blur">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground"><Ambulance className="size-5" /></span>
+      <div className="elevate-lg flex w-full max-w-[420px] items-center gap-3 overflow-hidden rounded-2xl border border-border bg-card/95 py-3 pr-2 pl-3 backdrop-blur-md">
+        <span className="btn-solid-primary grid size-10 shrink-0 place-items-center rounded-xl text-primary-foreground"><Ambulance className="size-5" /></span>
         <button
-          className="flex-1 text-left"
+          className="min-w-0 flex-1 text-left"
           onClick={() => {
             setBanner(null);
             nav({ to: "/invite" });
           }}
         >
-          <p className="flex items-center justify-between text-xs text-muted-foreground">
-            <span className="font-bold text-foreground">세이브타임</span>
-            <span>지금</span>
+          <p className="flex items-center justify-between text-[11px] text-muted-foreground">
+            <span className="font-extrabold text-foreground">세이브타임</span>
+            <span className="flex items-center gap-1"><span className="size-1.5 rounded-full bg-accent" />지금</span>
           </p>
-          <p className="mt-0.5 text-sm font-bold">{banner.from.name} 대원이 팀 {banner.teamCode}에 초대했어요</p>
-          <p className="text-xs text-muted-foreground">5분 안에 수락해야 팀에 들어갈 수 있어요 · 탭하면 확인</p>
+          <p className="mt-0.5 truncate text-sm font-bold">{banner.from.name} 대원이 팀 {banner.teamCode}에 초대했어요</p>
+          <p className="truncate text-xs text-muted-foreground">5분 안에 수락해야 팀에 들어갈 수 있어요</p>
         </button>
-        <button aria-label="알림 닫기" className="shrink-0 rounded-lg p-1 text-muted-foreground" onClick={() => setBanner(null)}>
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+        <button aria-label="알림 닫기" className="shrink-0 rounded-lg p-1.5 text-muted-foreground transition hover:bg-surface" onClick={() => setBanner(null)}>
           <X className="size-4" />
         </button>
       </div>
