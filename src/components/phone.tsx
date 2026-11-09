@@ -44,19 +44,19 @@ export function PhoneScreen({
     <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-background">
       <header
         className={cn(
-          "surface-header relative overflow-hidden px-5 pb-6 pt-5 text-primary-foreground",
-          accent && "bg-[image:var(--gradient-accent)]",
+          "surface-header relative overflow-hidden border-b border-border/60 px-5 pb-6 pt-5",
+          accent ? "bg-[image:var(--gradient-accent)] text-primary-foreground" : "text-foreground",
           dim && "opacity-60",
         )}
       >
-        {/* 머리글 안 빛 두 개 + 생명선: 평평한 남색 덩어리 티를 없앰 */}
-        <span aria-hidden className="pointer-events-none absolute -right-12 -top-20 size-52 rounded-full bg-accent/30 blur-3xl" />
-        <span aria-hidden className="pointer-events-none absolute -left-16 top-2 size-36 rounded-full bg-primary-foreground/10 blur-3xl" />
-        <EcgLine className="absolute -right-4 bottom-1 w-44 text-primary-foreground/25" />
+        {/* 머리글 안 빛 두 개 + 생명선 */}
+        <span aria-hidden className="pointer-events-none absolute -right-12 -top-20 size-52 rounded-full bg-accent/15 blur-3xl" />
+        <span aria-hidden className="pointer-events-none absolute -left-16 top-2 size-36 rounded-full bg-primary/6 blur-3xl" />
+        <EcgLine className={cn("absolute -right-4 bottom-1 w-44", accent ? "text-primary-foreground/30" : "text-accent/45")} />
         <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h1 className="text-[22px] leading-tight font-extrabold tracking-tight">{title}</h1>
-            {subtitle && <p className="mt-1.5 text-sm leading-snug text-primary-foreground/70">{subtitle}</p>}
+            {subtitle && <p className={cn("mt-1.5 text-sm leading-snug", accent ? "text-primary-foreground/70" : "text-muted-foreground")}>{subtitle}</p>}
           </div>
           {badge && <div className="shrink-0 pt-0.5">{badge}</div>}
         </div>
