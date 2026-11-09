@@ -41,6 +41,8 @@
   --color-frame: var(--frame);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-accent-deep: var(--accent-deep);
+  --color-primary-deep: var(--primary-deep);
 }
 
 :root {
@@ -169,7 +171,7 @@
 }
 
 /* 카드 위 작은 칸 (숫자 · 병상 · 통계) */
-@utility inset {
+@utility well {
   border-radius: var(--radius-md);
   background: var(--color-surface);
   border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);

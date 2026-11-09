@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Ambulance, FileText, Users, ShieldCheck, Settings, ArrowRight, BellRing } from "lucide-react";
-import { PhoneScreen, BigButton, SectionTitle, Pill } from "@/components/phone";
+import { Ambulance, FileText, Users, ShieldCheck, Settings, ArrowRight, BellRing, ClipboardList } from "lucide-react";
+import { PhoneScreen, BigButton, SectionTitle, Pill, Avatar, IconTile } from "@/components/phone";
 import { useTransport } from "@/lib/transport-store";
 import { useAuth, currentAccount } from "@/lib/auth-store";
 import { useEngine, actions, hospital } from "@/lib/engine";
@@ -46,8 +46,8 @@ function Home() {
   };
 
   const team = [
-    { id: "me", name: me?.name ?? "나", role: `${a.duty?.role ?? "처치"} · 나` },
-    ...(a.duty?.members ?? []).map((m) => ({ id: m.loginId, name: m.name, role: m.role })),
+    { id: "me", name: me?.name ?? "나", role: `${a.duty?.role ?? "처치"} · 나`, me: true },
+    ...(a.duty?.members ?? []).map((m) => ({ id: m.loginId, name: m.name, role: m.role, me: false })),
   ];
   const started = a.duty ? new Date(a.duty.startedAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
 
@@ -55,67 +55,75 @@ function Home() {
     <PhoneScreen
       title="세이브타임"
       subtitle={`${me?.name ?? ""} ${me?.rank ?? ""} · ${me?.center ?? ""}`}
+      badge={
+        <Link to="/settings" aria-label="설정" className="grid size-9 place-items-center rounded-xl bg-primary-foreground/12 text-primary-foreground/85 transition hover:bg-primary-foreground/20">
+          <Settings className="size-4.5" />
+        </Link>
+      }
       footer={
         active ? (
-          <BigButton onClick={resume}>진행 중 이송으로 <ArrowRight className="size-5" /></BigButton>
+          <BigButton size="lg" onClick={resume}>진행 중 이송으로 <ArrowRight className="size-5" /></BigButton>
         ) : (
-          <BigButton onClick={start}><Ambulance className="size-5" /> 새 이송 시작</BigButton>
+          <BigButton size="lg" onClick={start}><Ambulance className="size-5" /> 새 이송 시작</BigButton>
         )
       }
     >
-      <div className="mb-3 flex justify-end">
-        <Link to="/settings" className="flex items-center gap-1 text-sm text-muted-foreground"><Settings className="size-4" /> 설정</Link>
-      </div>
       {active && (
-        <button onClick={resume} className="mb-3 w-full rounded-xl border-2 border-accent bg-accent-soft p-4 text-left">
-          <p className="text-xs text-accent">진행 중 이송 · 팀당 1건</p>
-          <p className="mt-1 text-lg font-bold">{STATUS_LABEL[e.status!]}{e.confirmedId ? ` · ${hospital(e.confirmedId).name}` : ""}</p>
+        <button onClick={resume} className="mb-3 w-full overflow-hidden rounded-xl border-2 border-accent bg-accent-soft p-4 text-left shadow-[var(--shadow-accent)]">
+          <p className="text-[11px] font-bold tracking-wide text-accent-deep uppercase">진행 중 이송 · 팀당 1건</p>
+          <p className="mt-1.5 text-lg font-extrabold tracking-tight">{STATUS_LABEL[e.status!]}{e.confirmedId ? ` · ${hospital(e.confirmedId).name}` : ""}</p>
+          <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-accent-deep/80">이어서 보기 <ArrowRight className="size-3.5" /></p>
         </button>
       )}
-      <div className="tile flex items-center justify-between p-4">
-        <div>
-          <p className="text-xs text-muted-foreground">근무 상태</p>
-          <p className="mt-1 text-lg font-bold">근무 중 · {started} 시작</p>
+
+      <div className="tile flex items-center justify-between gap-3 p-4">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold tracking-wide text-muted-foreground uppercase">근무 상태</p>
+          <p className="mt-1 text-lg font-extrabold tracking-tight">근무 중 · {started} 시작</p>
         </div>
         <Pill tone={active ? "wait" : "ok"}>{active ? "이송 중" : "출동 가능"}</Pill>
       </div>
 
       {a.incoming.length > 0 && (
-        <Link to="/invite" className="tile mt-3 flex items-center gap-3 border-2 border-accent bg-accent-soft p-4">
-          <BellRing className="size-5 shrink-0 text-accent" />
-          <div className="flex-1">
-            <p className="font-bold">팀 초대 {a.incoming.length}건</p>
-            <p className="text-xs text-muted-foreground">{a.incoming.map((i) => `${i.from.name} 대원 · 팀 ${i.teamCode}`).join(", ")} · 5분 안에 답해야 해요</p>
+        <Link to="/invite" className="tile mt-3 flex items-center gap-3 border-2 border-accent bg-accent-soft p-4 shadow-[var(--shadow-accent)]">
+          <IconTile tone="accent" className="bg-accent text-accent-foreground"><BellRing className="size-5" /></IconTile>
+          <div className="min-w-0 flex-1">
+            <p className="font-extrabold">팀 초대 {a.incoming.length}건</p>
+            <p className="mt-0.5 truncate text-xs text-accent-deep/85">{a.incoming.map((i) => `${i.from.name} 대원 · 팀 ${i.teamCode}`).join(", ")} · 5분 안에 답해야 해요</p>
           </div>
-          <ArrowRight className="size-5 text-accent" />
+          <ArrowRight className="size-5 shrink-0 text-accent-deep" />
         </Link>
       )}
-
 
       <SectionTitle hint={`팀 코드 ${a.duty?.teamCode ?? "-"} · 팀당 진행 중 이송은 1건이에요`}>
         <span className="inline-flex items-center gap-1.5"><Users className="size-4" /> 오늘의 팀</span>
       </SectionTitle>
-      <div className="tile divide-y">
+      <div className="tile divide-y divide-border">
         {team.map((m) => (
-          <div key={m.id} className="flex items-center justify-between px-4 py-3">
-            <span className="font-semibold">{m.name}</span>
-            <span className="text-sm text-muted-foreground">{m.role}</span>
+          <div key={m.id} className="flex items-center gap-3 px-4 py-3">
+            <Avatar name={m.name} tone={m.me ? "accent" : "ink"} />
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-bold">{m.name}</p>
+              <p className="truncate text-xs text-muted-foreground">{m.role}</p>
+            </div>
+            {m.me && <Pill tone="neutral" dot={false}>나</Pill>}
           </div>
         ))}
       </div>
 
       <SectionTitle>기록</SectionTitle>
-      <Link to="/log" className="tile flex items-center gap-3 p-4">
-        <FileText className="size-5 text-accent" />
-        <div className="flex-1">
-          <p className="font-semibold">구급활동일지</p>
-          <p className="text-xs text-muted-foreground">도착 처리하면 입력한 정보가 자동으로 채워져요</p>
+      <Link to="/log" className="tile flex items-center gap-3 p-4 transition hover:bg-surface">
+        <IconTile tone="accent"><FileText className="size-5" /></IconTile>
+        <div className="min-w-0 flex-1">
+          <p className="font-bold">구급활동일지</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">도착 처리하면 입력한 정보가 자동으로 채워져요</p>
         </div>
+        <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
       </Link>
 
-      <p className="mt-6 flex items-start gap-1.5 text-xs text-muted-foreground">
-        <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
-        환자 이름 · 주민번호 · 연락처는 받지 않아요. 본 서비스는 참고용이며 병원 수용을 보장하지 않습니다.
+      <p className="mt-6 flex items-start gap-2 rounded-xl bg-surface px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+        <ShieldCheck className="mt-px size-4 shrink-0 text-success" />
+        <span>환자 이름 · 주민번호 · 연락처는 받지 않아요. 본 서비스는 참고용이며 병원 수용을 보장하지 않습니다.</span>
       </p>
     </PhoneScreen>
   );
