@@ -31,7 +31,7 @@ function Login() {
   };
 
   return (
-    <div className="surface-header mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-6 pb-8 pt-14 text-primary-foreground">
+    <div className="surface-header relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col overflow-hidden px-6 pb-8 pt-14 text-primary-foreground">
       <span aria-hidden className="pointer-events-none absolute -right-16 -top-10 size-64 rounded-full bg-accent/25 blur-3xl" />
       <span aria-hidden className="pointer-events-none absolute -left-20 top-40 size-56 rounded-full bg-primary-foreground/8 blur-3xl" />
 

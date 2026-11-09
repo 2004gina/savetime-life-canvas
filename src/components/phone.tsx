@@ -85,12 +85,13 @@ const toneCls: Record<Tone, string> = {
   danger: "bg-destructive/10 text-destructive border-destructive/25",
 };
 /** 상태 표시: 점이 같이 가서 색만 봐도 읽힘 */
-export function Pill({ tone, children, dot = true }: { tone: Tone; children: ReactNode; dot?: boolean }) {
+export function Pill({ tone, children, dot = true, className }: { tone: Tone; children: ReactNode; dot?: boolean; className?: string }) {
   return (
     <span
       className={cn(
         "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
         toneCls[tone],
+        className,
       )}
     >
       {dot && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
