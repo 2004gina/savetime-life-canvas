@@ -1,6 +1,22 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+/** 심전도선: 머리글을 가로지르는 생명선 — 흐르듯 그어졌다 사라짐 */
+export function EcgLine({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 220 40" fill="none" className={cn("pointer-events-none", className)}>
+      <path
+        d="M0 22 H52 L62 22 68 10 74 32 80 4 87 36 93 22 H128 L136 22 141 15 146 27 151 22 H220"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="ecg-flow"
+      />
+    </svg>
+  );
+}
+
 /**
  * 구급대원 앱 한 화면: 남색 머리(그라디언트) + 내용 + 아래 고정 버튼.
  * 모든 화면이 이 뼈대를 쓰므로 여기서 색·그림자·여백을 정리하면 전체가 같이 바뀐다.
@@ -33,9 +49,10 @@ export function PhoneScreen({
           dim && "opacity-60",
         )}
       >
-        {/* 머리글 안 빛 두 개: 평평한 남색 덩어리 티를 없앰 */}
+        {/* 머리글 안 빛 두 개 + 생명선: 평평한 남색 덩어리 티를 없앰 */}
         <span aria-hidden className="pointer-events-none absolute -right-12 -top-20 size-52 rounded-full bg-accent/30 blur-3xl" />
         <span aria-hidden className="pointer-events-none absolute -left-16 top-2 size-36 rounded-full bg-primary-foreground/10 blur-3xl" />
+        <EcgLine className="absolute -right-4 bottom-1 w-44 text-primary-foreground/25" />
         <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h1 className="text-[22px] leading-tight font-extrabold tracking-tight">{title}</h1>
@@ -94,7 +111,7 @@ export function Pill({ tone, children, dot = true, className }: { tone: Tone; ch
         className,
       )}
     >
-      {dot && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
+      {dot && <span aria-hidden className={cn("size-1.5 rounded-full bg-current", tone === "call" && "heartbeat")} />}
       {children}
     </span>
   );
