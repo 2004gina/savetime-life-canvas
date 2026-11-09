@@ -58,10 +58,10 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.21 0.028 262);
 
-  /* 잉크(머리글 · 기본 버튼): 남색에 깊이를 두 겹 */
-  --primary: oklch(0.255 0.05 264);
+  /* 잉크(머리글 · 기본 버튼): 무채색 차콜 — 레드 포인트와 깔끔한 대비 */
+  --primary: oklch(0.245 0.008 260);
   --primary-foreground: oklch(0.985 0.004 85);
-  --primary-deep: oklch(0.19 0.045 265);
+  --primary-deep: oklch(0.17 0.006 260);
 
   --secondary: oklch(0.945 0.008 252);
   --secondary-foreground: oklch(0.3 0.03 260);
@@ -95,7 +95,7 @@
 
   /* 그라디언트 · 그림자 (의미 토큰으로만 씀) — 밝은 머리글: 흰색 → 차가운 틴트 → 레드 기운 */
   --gradient-header: linear-gradient(155deg, oklch(1 0 0) 0%, oklch(0.975 0.008 245) 55%, oklch(0.955 0.016 240) 82%, oklch(0.945 0.03 27) 135%);
-  --gradient-primary: linear-gradient(140deg, oklch(0.28 0.055 264) 0%, oklch(0.2 0.05 268) 100%);
+  --gradient-primary: linear-gradient(140deg, oklch(0.28 0.01 260) 0%, oklch(0.19 0.008 260) 100%);
   --gradient-accent: linear-gradient(140deg, oklch(0.62 0.225 29) 0%, oklch(0.5 0.2 24) 100%);
   --gradient-success: linear-gradient(140deg, oklch(0.56 0.12 175) 0%, oklch(0.46 0.105 175) 100%);
 
@@ -103,7 +103,7 @@
   --shadow-lift: 0 2px 6px oklch(0.3 0.03 262 / 0.06), 0 24px 48px -24px oklch(0.3 0.03 262 / 0.22);
   --shadow-header: 0 12px 26px -20px oklch(0.4 0.05 260 / 0.22);
   --shadow-accent: 0 12px 26px -14px oklch(0.5 0.2 24 / 0.5);
-  --shadow-primary: 0 12px 26px -14px oklch(0.21 0.045 266 / 0.5);
+  --shadow-primary: 0 12px 26px -14px oklch(0.2 0.01 260 / 0.5);
   --shadow-success: 0 12px 26px -14px oklch(0.46 0.105 175 / 0.45);
 }
 
