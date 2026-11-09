@@ -88,7 +88,7 @@ function RequestPage() {
             <BigButton size="lg" onClick={() => run(actions.expand())}>반경 넓혀 다시 요청 ({RADIUS_STEPS[RADIUS_STEPS.indexOf(e.radius) + 1]}km)</BigButton>
           ) : (
             <Notice tone="warn">최대 반경(40km)이에요 · 가까운 병원에 전화로 확인하세요</Notice>
-          )}
+          ))}
           <BigButton variant="outline" onClick={() => window.confirm("이송을 취소할까요? 열린 요청이 모두 닫혀요.") && run(actions.cancel())}>이송 취소</BigButton>
         </div>
       }
