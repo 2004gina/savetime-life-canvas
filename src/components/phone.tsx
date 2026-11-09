@@ -1,94 +1,234 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/** 구급대원 앱 한 화면: 남색 머리 + 내용 + 아래 고정 버튼 */
+/**
+ * 구급대원 앱 한 화면: 남색 머리(그라디언트) + 내용 + 아래 고정 버튼.
+ * 모든 화면이 이 뼈대를 쓰므로 여기서 색·그림자·여백을 정리하면 전체가 같이 바뀐다.
+ */
 export function PhoneScreen({
   title,
   subtitle,
   children,
   footer,
   dim,
+  badge,
+  accent = false,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
   footer?: ReactNode;
   dim?: boolean;
+  /** 머리글 오른쪽에 얹는 작은 표시 (상태 · 시간 등) */
+  badge?: ReactNode;
+  /** 긴급·주의 화면: 머리를 신호색으로 */
+  accent?: boolean;
 }) {
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-background shadow-xl">
-      <header className={cn("bg-primary px-5 pb-5 pt-4 text-primary-foreground", dim && "opacity-60")}>
-        <h1 className="text-xl font-bold tracking-tight">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm opacity-75">{subtitle}</p>}
+    <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-background">
+      <header
+        className={cn(
+          "surface-header relative overflow-hidden px-5 pb-6 pt-5 text-primary-foreground",
+          accent && "bg-[image:var(--gradient-accent)]",
+          dim && "opacity-60",
+        )}
+      >
+        {/* 머리글 안 빛 두 개: 평평한 남색 덩어리 티를 없앰 */}
+        <span aria-hidden className="pointer-events-none absolute -right-12 -top-20 size-52 rounded-full bg-accent/30 blur-3xl" />
+        <span aria-hidden className="pointer-events-none absolute -left-16 top-2 size-36 rounded-full bg-primary-foreground/10 blur-3xl" />
+        <div className="relative flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-[22px] leading-tight font-extrabold tracking-tight">{title}</h1>
+            {subtitle && <p className="mt-1.5 text-sm leading-snug text-primary-foreground/70">{subtitle}</p>}
+          </div>
+          {badge && <div className="shrink-0 pt-0.5">{badge}</div>}
+        </div>
       </header>
-      <main className="flex-1 px-5 py-5">{children}</main>
+
+      <main className="flex-1 px-5 pb-10 pt-5">{children}</main>
+
       {footer && (
-        <footer className="sticky bottom-0 border-t bg-card px-5 pb-6 pt-4">{footer}</footer>
+        <footer className="elevate-lg sticky bottom-0 z-30 border-t border-border/70 bg-card/85 px-5 pb-[max(1.15rem,env(safe-area-inset-bottom))] pt-3.5 backdrop-blur-md">
+          {footer}
+        </footer>
       )}
     </div>
   );
 }
 
-export function SectionTitle({ children, hint }: { children: ReactNode; hint?: ReactNode }) {
+/** 구역 제목: 작게 빼고 아래 칸과 선으로 묶음 */
+export function SectionTitle({ children, hint, action }: { children: ReactNode; hint?: ReactNode; action?: ReactNode }) {
   return (
-    <div className="mb-2 mt-5 first:mt-0">
-      <h2 className="text-base font-bold">{children}</h2>
-      {hint && <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>}
+    <div className="mt-7 mb-2.5 first:mt-0">
+      <div className="flex items-end justify-between gap-3">
+        <h2 className="flex items-center gap-2 text-[15px] font-extrabold tracking-tight text-foreground">
+          <span className="h-3.5 w-[3px] shrink-0 rounded-full bg-accent" />
+          {children}
+        </h2>
+        {action}
+      </div>
+      {hint && <p className="mt-1 pl-[11px] text-xs leading-relaxed text-muted-foreground">{hint}</p>}
     </div>
   );
 }
 
 export function Label({ children }: { children: ReactNode }) {
-  return <span className="mb-1.5 block text-xs text-muted-foreground">{children}</span>;
+  return <span className="mb-1.5 block text-[11px] font-bold tracking-wide text-muted-foreground uppercase">{children}</span>;
 }
 
 type Tone = "wait" | "call" | "ok" | "neutral" | "danger";
 const toneCls: Record<Tone, string> = {
-  wait: "bg-warning-soft text-warning",
-  call: "bg-accent-soft text-accent",
-  ok: "bg-success-soft text-success",
-  neutral: "bg-muted text-muted-foreground",
-  danger: "bg-destructive/10 text-destructive",
+  wait: "bg-warning-soft text-warning border-warning/25",
+  call: "bg-accent-soft text-accent-deep border-accent/25",
+  ok: "bg-success-soft text-success border-success/25",
+  neutral: "bg-surface-2 text-muted-foreground border-border",
+  danger: "bg-destructive/10 text-destructive border-destructive/25",
 };
-export function Pill({ tone, children }: { tone: Tone; children: ReactNode }) {
+/** 상태 표시: 점이 같이 가서 색만 봐도 읽힘 */
+export function Pill({ tone, children, dot = true, className }: { tone: Tone; children: ReactNode; dot?: boolean; className?: string }) {
   return (
-    <span className={cn("shrink-0 rounded-full px-3 py-1 text-sm font-semibold", toneCls[tone])}>
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
+        toneCls[tone],
+        className,
+      )}
+    >
+      {dot && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
       {children}
     </span>
   );
 }
 
-export function Notice({ tone, children }: { tone: "warn" | "ok" | "info"; children: ReactNode }) {
-  const cls = {
-    warn: "bg-warning-soft text-warning",
-    ok: "bg-success-soft text-success",
-    info: "bg-info-soft text-secondary-foreground",
-  }[tone];
-  return <div className={cn("rounded-lg px-4 py-3 text-sm font-semibold", cls)}>{children}</div>;
+const noticeCls = {
+  warn: "bg-warning-soft text-warning border-warning/30",
+  ok: "bg-success-soft text-success border-success/30",
+  info: "bg-info-soft text-secondary-foreground border-border-strong/60",
+} as const;
+
+/** 안내: 왼쪽에 신호 줄 */
+export function Notice({ tone, children, icon }: { tone: "warn" | "ok" | "info"; children: ReactNode; icon?: ReactNode }) {
+  return (
+    <div className={cn("flex items-start gap-2.5 overflow-hidden rounded-lg border px-3.5 py-3 text-sm font-semibold", noticeCls[tone])}>
+      {icon ? <span className="mt-px shrink-0">{icon}</span> : <span aria-hidden className="mt-1 size-2 shrink-0 rounded-full bg-current" />}
+      <span className="flex-1 leading-relaxed">{children}</span>
+    </div>
+  );
 }
+
+const btnV = {
+  primary: "btn-solid-primary text-primary-foreground",
+  outline: "border border-border-strong bg-card text-foreground hover:bg-surface",
+  success: "btn-solid-success text-success-foreground",
+  danger: "bg-destructive text-destructive-foreground shadow-[var(--shadow-accent)]",
+  accent: "btn-solid-accent text-accent-foreground",
+  ghost: "text-muted-foreground hover:bg-surface",
+} as const;
 
 export function BigButton({
   variant = "primary",
   className,
+  size = "md",
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "outline" | "success" | "danger" | "accent";
+  variant?: "primary" | "outline" | "success" | "danger" | "accent" | "ghost";
+  size?: "sm" | "md" | "lg";
 }) {
-  const v = {
-    primary: "bg-primary text-primary-foreground disabled:bg-muted-foreground/40",
-    outline: "border bg-card text-foreground",
-    success: "bg-success text-success-foreground",
-    danger: "bg-destructive text-destructive-foreground",
-    accent: "bg-accent text-accent-foreground",
-  }[variant];
+  const h = { sm: "h-10 text-sm", md: "h-12 text-[15px]", lg: "h-14 text-base" }[size];
   return (
     <button
       className={cn(
-        "flex h-13 w-full items-center justify-center gap-1.5 rounded-lg px-4 text-base font-bold transition active:scale-[0.98] disabled:cursor-not-allowed",
-        v,
+        "inline-flex w-full items-center justify-center gap-1.5 rounded-xl font-bold tracking-tight transition",
+        "active:translate-y-px active:scale-[0.995] disabled:cursor-not-allowed disabled:shadow-none",
+        variant === "outline" && "disabled:border-border disabled:bg-surface disabled:text-muted-foreground/60",
+        variant === "primary" && "disabled:bg-muted disabled:text-muted-foreground/50",
+        (variant === "accent" || variant === "success") && "disabled:opacity-45",
+        h,
+        btnV[variant],
         className,
       )}
       {...props}
     />
+  );
+}
+
+/** 두 개 이상 맞붙는 선택 (팀 만들기/참여, 역할 고르기) */
+export function Segmented<T extends string>({
+  value,
+  onChange,
+  options,
+  className,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: ReactNode }[];
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex gap-1 rounded-xl border border-border bg-surface-2 p-1", className)}>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          onClick={() => onChange(o.value)}
+          aria-pressed={value === o.value}
+          className={cn(
+            "flex-1 rounded-lg px-3 py-2.5 text-sm font-bold transition",
+            value === o.value ? "bg-card text-foreground shadow-[var(--shadow-card)]" : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** 이름 두 글자만 넣은 원 (팀원 · 대원 목록) */
+export function Avatar({ name, tone = "ink", className }: { name: string; tone?: "ink" | "accent" | "muted"; className?: string }) {
+  const t = { ink: "bg-primary text-primary-foreground", accent: "bg-accent-soft text-accent-deep", muted: "bg-surface-2 text-muted-foreground" }[tone];
+  return (
+    <span className={cn("grid size-9 shrink-0 place-items-center rounded-full text-sm font-extrabold", t, className)}>
+      {name.slice(0, 2)}
+    </span>
+  );
+}
+
+/** 카드 안 머리 아이콘 (권한 · 초대 · 기록) */
+export function IconTile({ children, tone = "accent", className }: { children: ReactNode; tone?: "accent" | "ink" | "warn" | "ok"; className?: string }) {
+  const t = {
+    accent: "bg-accent-soft text-accent-deep",
+    ink: "bg-primary/8 text-primary",
+    warn: "bg-warning-soft text-warning",
+    ok: "bg-success-soft text-success",
+  }[tone];
+  return <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", t, className)}>{children}</span>;
+}
+
+/** 3단계 입력 같은 진행 점 ( patient 화면 ) */
+export function StepDots({ step, total, onJump }: { step: number; total: number; onJump?: (s: number) => void }) {
+  return (
+    <div className="flex gap-1.5">
+      {Array.from({ length: total }, (_, i) => i + 1).map((s) => (
+        <button
+          key={s}
+          onClick={() => onJump?.(s)}
+          aria-label={`${s}단계`}
+          className={cn(
+            "h-1.5 flex-1 rounded-full transition",
+            s === step ? "bg-accent shadow-[var(--shadow-accent)]" : s < step ? "bg-primary/70" : "bg-border-strong",
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** 카드 안의 값 한 줄 (설정 · 신청 내역) */
+export function KeyVal({ label, value, tone = "default" }: { label: ReactNode; value: ReactNode; tone?: "default" | "danger" }) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-4 py-3.5">
+      <span className={cn("text-sm", tone === "danger" ? "font-bold text-destructive" : "text-muted-foreground")}>{label}</span>
+      <span className={cn("text-right text-sm font-bold", tone === "danger" ? "text-destructive" : "text-foreground")}>{value}</span>
+    </div>
   );
 }

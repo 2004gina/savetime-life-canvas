@@ -6,11 +6,11 @@
 
 @theme inline {
   --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 3px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-xl: calc(var(--radius) + 5px);
+  --radius-2xl: calc(var(--radius) + 12px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -35,40 +35,75 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-frame: var(--frame);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-accent-deep: var(--accent-deep);
+  --color-primary-deep: var(--primary-deep);
 }
 
 :root {
-  --radius: 0.75rem;
-  --frame: oklch(0.93 0.004 250);
-  --background: oklch(0.975 0.004 85);
-  --foreground: oklch(0.22 0.03 260);
+  --radius: 0.9rem;
+
+  /* 바탕: 아주 옅은 종이트 · 앱 기둥을 살짝 띄워 보이는 차가운 회색 */
+  --frame: oklch(0.905 0.008 250);
+  --background: oklch(0.982 0.0035 82);
+  --foreground: oklch(0.21 0.028 262);
+
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.03 260);
+  --card-foreground: oklch(0.21 0.028 262);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.03 260);
-  --primary: oklch(0.27 0.045 262);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.95 0.006 250);
+  --popover-foreground: oklch(0.21 0.028 262);
+
+  /* 잉크(머리글 · 기본 버튼): 남색에 깊이를 두 겹 */
+  --primary: oklch(0.255 0.05 264);
+  --primary-foreground: oklch(0.985 0.004 85);
+  --primary-deep: oklch(0.19 0.045 265);
+
+  --secondary: oklch(0.945 0.008 252);
   --secondary-foreground: oklch(0.3 0.03 260);
-  --muted: oklch(0.94 0.005 250);
-  --muted-foreground: oklch(0.52 0.02 260);
-  --accent: oklch(0.6 0.17 42);
+  --muted: oklch(0.945 0.006 252);
+  --muted-foreground: oklch(0.535 0.022 260);
+
+  /* 신호(주황): 이 앱의 유일한 강조색 */
+  --accent: oklch(0.615 0.185 45);
   --accent-foreground: oklch(0.99 0 0);
-  --accent-soft: oklch(0.95 0.035 50);
-  --success: oklch(0.5 0.12 150);
+  --accent-soft: oklch(0.955 0.035 55);
+  --accent-deep: oklch(0.52 0.15 44);
+
+  --success: oklch(0.505 0.12 152);
   --success-foreground: oklch(0.99 0 0);
-  --success-soft: oklch(0.95 0.04 150);
-  --warning: oklch(0.52 0.11 75);
-  --warning-soft: oklch(0.95 0.05 90);
-  --info-soft: oklch(0.96 0.012 250);
-  --destructive: oklch(0.5 0.19 27);
+  --success-soft: oklch(0.955 0.04 152);
+  --warning: oklch(0.53 0.115 76);
+  --warning-soft: oklch(0.955 0.05 92);
+  --info-soft: oklch(0.962 0.014 250);
+  --destructive: oklch(0.505 0.19 27);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.9 0.006 250);
-  --input: oklch(0.9 0.006 250);
-  --ring: oklch(0.6 0.17 42);
+
+  --border: oklch(0.905 0.008 252);
+  --border-strong: oklch(0.845 0.012 252);
+  --input: oklch(0.9 0.008 252);
+  --ring: oklch(0.615 0.185 45);
+
+  /* 겹 surfaces: 카드 위에 얹는 작은 칸들 */
+  --surface: oklch(0.975 0.005 250);
+  --surface-2: oklch(0.955 0.008 250);
+
+  /* 그라디언트 · 그림자 (의미 토큰으로만 씀) */
+  --gradient-header: linear-gradient(155deg, oklch(0.235 0.05 266) 0%, oklch(0.285 0.055 259) 58%, oklch(0.345 0.07 248) 100%);
+  --gradient-primary: linear-gradient(140deg, oklch(0.29 0.05 264) 0%, oklch(0.21 0.045 266) 100%);
+  --gradient-accent: linear-gradient(140deg, oklch(0.66 0.19 48) 0%, oklch(0.55 0.175 40) 100%);
+  --gradient-success: linear-gradient(140deg, oklch(0.55 0.13 152) 0%, oklch(0.45 0.115 152) 100%);
+
+  --shadow-card: 0 1px 2px oklch(0.21 0.028 262 / 0.05), 0 10px 26px -18px oklch(0.21 0.028 262 / 0.16);
+  --shadow-lift: 0 2px 5px oklch(0.21 0.028 262 / 0.07), 0 22px 44px -22px oklch(0.21 0.028 262 / 0.26);
+  --shadow-header: 0 14px 30px -22px oklch(0.19 0.045 265 / 0.55);
+  --shadow-accent: 0 10px 22px -12px oklch(0.55 0.175 40 / 0.55);
+  --shadow-primary: 0 10px 22px -12px oklch(0.21 0.045 266 / 0.55);
+  --shadow-success: 0 10px 22px -12px oklch(0.45 0.115 152 / 0.5);
 }
 
 @layer base {
@@ -80,27 +115,116 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.011em;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 24%, transparent);
+  }
+  /* 숫자·시각은 고르게 */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
+/* ── 입력 ───────────────────────────────────────────── */
 @utility field {
   width: 100%;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-input);
   background: var(--color-card);
-  padding: 0.8rem 1rem;
+  padding: 0.85rem 1rem;
   font-size: 1.05rem;
+  color: var(--color-foreground);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.6);
   outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  &::placeholder {
+    color: oklch(0.68 0.02 260);
+  }
+  &:hover {
+    border-color: var(--color-border-strong);
+  }
   &:focus {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 18%, transparent);
+    background: color-mix(in oklab, var(--color-accent-soft) 40%, var(--color-card));
+    box-shadow: 0 0 0 3.5px color-mix(in oklab, var(--color-accent) 18%, transparent);
+  }
+  &:disabled {
+    background: var(--color-surface);
+    color: var(--color-muted-foreground);
   }
 }
 
+/* ── 카드 ───────────────────────────────────────────── */
 @utility tile {
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   background: var(--color-card);
+  box-shadow: var(--shadow-card);
+}
+
+@utility tile-flat {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+/* 카드 위 작은 칸 (숫자 · 병상 · 통계) */
+@utility well {
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+}
+
+/* ── 표면 · 입체 ────────────────────────────────────── */
+@utility surface-header {
+  background: var(--gradient-header);
+  box-shadow: var(--shadow-header);
+}
+@utility elevate {
+  box-shadow: var(--shadow-card);
+}
+@utility elevate-lg {
+  box-shadow: var(--shadow-lift);
+}
+
+/* ── 버튼 ───────────────────────────────────────────── */
+@utility btn-solid-primary {
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-primary);
+}
+@utility btn-solid-accent {
+  background: var(--gradient-accent);
+  box-shadow: var(--shadow-accent);
+}
+@utility btn-solid-success {
+  background: var(--gradient-success);
+  box-shadow: var(--shadow-success);
+}
+
+/* ── 칩 · 단계 ──────────────────────────────────────── */
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+@utility chip-on {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-deep);
+}
+
+@utility hairline {
+  border-top: 1px solid var(--color-border);
 }
 
 /* 팀 초대 알림 배너가 폰 위쪽에서 슬라이드 인 (SFR-130) */
@@ -119,6 +243,21 @@
   animation: push-in 0.28s ease-out;
 }
 
+/* 새 승인 · 진동 알림이 왔다는 짧은 강조 */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility rise-in {
+  animation: rise-in 0.24s ease-out;
+}
 
 @media print {
   @page { size: A4; margin: 8mm; }

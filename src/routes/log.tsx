@@ -76,14 +76,14 @@ function LogBody() {
   const chips = (k: "symptoms" | "history" | "care", items: string[]) => (
     <div className="flex flex-wrap gap-1.5">
       {items.map((i) => (
-        <button key={i} onClick={() => toggle(k, i)} className={cn("rounded-full border px-3 py-1.5 text-sm", f[k].includes(i) ? "border-accent bg-accent-soft font-semibold text-accent" : "bg-card")}>{i}</button>
+        <button key={i} onClick={() => toggle(k, i)} aria-pressed={f[k].includes(i)} className={cn("chip py-2", f[k].includes(i) ? "chip-on" : "hover:bg-surface-2")}>{i}</button>
       ))}
     </div>
   );
   const radio = (k: keyof typeof f, items: string[]) => (
     <div className="flex flex-wrap gap-1.5">
       {items.map((i) => (
-        <button key={i} onClick={() => set(k, i as never)} className={cn("rounded-full border px-3 py-1.5 text-sm", f[k] === i ? "border-primary bg-primary font-semibold text-primary-foreground" : "bg-card")}>{i}</button>
+        <button key={i} onClick={() => set(k, i as never)} aria-pressed={f[k] === i} className={cn("chip py-2", f[k] === i ? "border-primary bg-primary font-bold text-primary-foreground" : "hover:bg-surface-2")}>{i}</button>
       ))}
     </div>
   );
@@ -102,9 +102,9 @@ function LogBody() {
       footer={<div className="space-y-2"><BigButton onClick={() => setSheet(true)}>제출용 서식으로 보기 · 인쇄</BigButton><button onClick={save} className="w-full py-2 text-sm font-semibold text-muted-foreground">저장하고 홈으로</button></div>}
     >
       {sheet && <LogFormSheet f={f} onClose={() => setSheet(false)} />}
-      <div className="mb-4 flex items-start gap-2 rounded-lg bg-info-soft px-4 py-3 text-sm">
-        <Sparkles className="mt-0.5 size-4 shrink-0 text-accent" />
-        <span><b>자동</b> 표시가 있는 칸은 이송 중 기록으로 채웠어요. 각 칸의 <b>수정</b>을 눌러 고칠 수 있어요.</span>
+      <div className="mb-4 flex items-start gap-2.5 rounded-xl bg-info-soft px-4 py-3 text-sm">
+        <Sparkles className="mt-px size-4 shrink-0 text-accent-deep" />
+        <span className="leading-relaxed"><b>자동</b> 표시가 있는 칸은 이송 중 기록으로 채웠어요. 각 칸의 <b>수정</b>을 눌러 고칠 수 있어요.</span>
       </div>
 
       <Section title="구급출동" auto>
@@ -226,29 +226,30 @@ function LogBody() {
 function Section({ title, auto, note, children }: { title: string; auto?: boolean; note?: string; children: (edit: boolean) => ReactNode }) {
   const [edit, setEdit] = useState(false);
   return (
-    <section className="tile mb-3 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 font-bold">
+    <section className="tile mb-3 overflow-hidden">
+      <div className="flex items-center justify-between gap-2 border-b border-border bg-surface/70 px-4 py-2.5">
+        <h2 className="flex items-center gap-2 text-[15px] font-extrabold tracking-tight">
+          <span aria-hidden className="h-3.5 w-[3px] shrink-0 rounded-full bg-accent" />
           {title}
-          {auto && <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent">자동</span>}
+          {auto && <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-extrabold text-accent-deep">자동</span>}
         </h2>
-        <button onClick={() => setEdit(!edit)} className={cn("flex items-center gap-1 rounded-md px-2.5 py-1 text-sm font-semibold", edit ? "bg-primary text-primary-foreground" : "bg-muted")}>
+        <button onClick={() => setEdit(!edit)} className={cn("inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold transition", edit ? "btn-solid-primary text-primary-foreground" : "border border-border bg-card text-muted-foreground hover:bg-surface")}>
           {edit ? <><Check className="size-3.5" /> 완료</> : <><Pencil className="size-3.5" /> 수정</>}
         </button>
       </div>
-      {children(edit)}
-      {note && <p className="mt-3 text-xs text-muted-foreground">{note}</p>}
+      <div className="p-4">{children(edit)}</div>
+      {note && <p className="border-t border-border bg-surface/60 px-4 py-2.5 text-xs text-muted-foreground">{note}</p>}
     </section>
   );
 }
 
 function Rows({ rows }: { rows: [string, string | undefined | false][] }) {
   return (
-    <dl className="space-y-1.5 text-sm">
+    <dl className="text-sm">
       {rows.map(([k, val]) => (
-        <div key={k} className="flex gap-3">
+        <div key={k} className="flex gap-3 border-b border-dashed border-border py-2 last:border-0">
           <dt className="w-20 shrink-0 text-muted-foreground">{k}</dt>
-          <dd className={cn("flex-1", !val && "text-muted-foreground/60")}>{val || "미입력"}</dd>
+          <dd className={cn("flex-1 font-semibold", !val && "font-normal text-muted-foreground/60")}>{val || "미입력"}</dd>
         </div>
       ))}
     </dl>
