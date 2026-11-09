@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { BellRing, Check, X, Users } from "lucide-react";
+import { BellRing, Check, X, Users, Clock } from "lucide-react";
 import { toast } from "sonner";
-import { PhoneScreen, BigButton, SectionTitle, Notice, Pill } from "@/components/phone";
+import { PhoneScreen, BigButton, SectionTitle, Notice, Pill, Avatar, IconTile } from "@/components/phone";
 import {
   useAuth, getAuth, setAuth, acceptInvite, rejectInvite, inviteLeft, type Incoming,
 } from "@/lib/auth-store";
@@ -43,7 +43,6 @@ function InvitePage() {
     nav({ to: "/" });
   };
 
-
   const reject = (inv: Incoming) => {
     const r = rejectInvite(getAuth(), inv.id);
     setAuth(r.patch);
@@ -53,6 +52,10 @@ function InvitePage() {
   if (a.incoming.length === 0) {
     return (
       <PhoneScreen title="팀 초대" subtitle="지금 온 초대가 없어요" footer={<BigButton variant="outline" onClick={() => nav({ to: "/" })}>홈으로</BigButton>}>
+        <div className="flex flex-col items-center py-10 text-center">
+          <IconTile tone="ink" className="size-14 rounded-2xl"><BellRing className="size-6" /></IconTile>
+          <p className="mt-4 text-base font-extrabold">대기 중인 초대가 없어요</p>
+        </div>
         <Notice tone="info">초대는 초대받은 대원의 폰에 '팀 초대' 알림으로 와요. 5분 안에 수락해야 팀에 들어갈 수 있어요.</Notice>
         <p className="mt-3 text-xs text-muted-foreground">시연: 설정 → '이보준이 나를 팀 4821에 초대'를 누르면 알림이 다시 와요.</p>
       </PhoneScreen>
@@ -63,43 +66,46 @@ function InvitePage() {
     <PhoneScreen
       title="팀 초대"
       subtitle={`${a.incoming.length}건 · 5분 안에 답해야 해요`}
+      badge={<Pill tone="wait" dot={false} className="bg-primary-foreground/12 text-primary-foreground/85">답변 필요</Pill>}
       footer={<BigButton variant="outline" onClick={() => nav({ to: "/" })}>홈으로</BigButton>}
     >
       {a.incoming.map((inv) => {
         const left = inviteLeft(inv, now);
         const soon = left <= 60_000;
         return (
-          <div key={inv.id} className="tile overflow-hidden">
-            <div className="flex items-center justify-between gap-2 bg-primary px-4 py-3 text-primary-foreground">
-              <span className="inline-flex items-center gap-2 font-bold"><BellRing className="size-4" /> 팀 초대</span>
-              <span className={`rounded-full px-3 py-1 text-sm font-bold ${soon ? "bg-destructive text-destructive-foreground" : "bg-primary-foreground/15"}`}>
-                {mmss(left)} 뒤 만료
+          <div key={inv.id} className="tile mb-3 overflow-hidden">
+            <div className="flex items-center justify-between gap-2 border-b border-border bg-surface px-4 py-2.5">
+              <span className="inline-flex items-center gap-2 text-[11px] font-bold tracking-wide text-muted-foreground uppercase"><BellRing className="size-3.5" /> 팀 초대</span>
+              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-extrabold tabular-nums ${soon ? "bg-destructive text-destructive-foreground" : "bg-warning-soft text-warning"}`}>
+                <Clock className="size-3" /> {mmss(left)} 뒤 만료
               </span>
             </div>
 
-            <div className="space-y-3 p-4">
-              <div>
-                <p className="text-xs text-muted-foreground">초대한 대원</p>
-                <p className="mt-1 text-lg font-bold">{inv.from.name} <span className="text-sm font-normal text-muted-foreground">{inv.from.rank}</span></p>
-                <p className="text-sm text-muted-foreground">{inv.from.center} · 사번 뒤 {inv.from.employeeNo.slice(-4)}</p>
-              </div>
-
-              <div className="flex items-end justify-between gap-3 rounded-lg bg-muted px-4 py-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">들어갈 팀</p>
-                  <p className="mt-0.5 text-3xl font-bold tracking-[0.25em]">{inv.teamCode}</p>
+            <div className="space-y-4 p-4">
+              <div className="flex items-center gap-3">
+                <Avatar name={inv.from.name} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-extrabold">{inv.from.name} <span className="text-sm font-semibold text-muted-foreground">{inv.from.rank}</span></p>
+                  <p className="truncate text-xs text-muted-foreground">{inv.from.center} · 사번 뒤 {inv.from.employeeNo.slice(-4)}</p>
                 </div>
-                <Pill tone="call">요청 역할 {inv.role}</Pill>
               </div>
 
-              <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
-                <Users className="mt-0.5 size-3.5 shrink-0" />
+              <div className="well flex items-end justify-between gap-3 px-4 py-3.5">
+                <div>
+                  <p className="text-[11px] font-bold tracking-wide text-muted-foreground uppercase">들어갈 팀</p>
+                  <p className="mt-1 text-3xl leading-none font-extrabold tracking-[0.22em] tabular-nums">{inv.teamCode}</p>
+                </div>
+                <Pill tone="call" dot={false}>요청 역할 {inv.role}</Pill>
+              </div>
+
+              <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+                <Users className="mt-px size-3.5 shrink-0" />
                 수락하면 이 대원과 한 팀이 돼요. 팀은 최대 4명 · 운전은 1명이고, 이미 운전 대원이 있으면 내 역할은 처치로 들어가요.
               </p>
 
               <div className="grid grid-cols-2 gap-2">
-                <BigButton onClick={() => accept(inv)}><Check className="size-5" /> 수락</BigButton>
-                <BigButton variant="outline" onClick={() => reject(inv)}><X className="size-5" /> 거절</BigButton>
+                <BigButton size="lg" onClick={() => accept(inv)}><Check className="size-5" /> 수락</BigButton>
+                <BigButton size="lg" variant="outline" onClick={() => reject(inv)}><X className="size-5" /> 거절</BigButton>
               </div>
             </div>
           </div>

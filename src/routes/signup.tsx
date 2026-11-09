@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Camera, Check, ChevronLeft } from "lucide-react";
-import { PhoneScreen, BigButton, Label, Notice, SectionTitle } from "@/components/phone";
+import { Camera, Check, ChevronLeft, Building2 } from "lucide-react";
+import { PhoneScreen, BigButton, Label, Notice, SectionTitle, IconTile } from "@/components/phone";
 import { useAuth, setAuth, ORGS, RANKS, signupError, passwordOk } from "@/lib/auth-store";
 import { cn } from "@/lib/utils";
 
@@ -48,40 +48,61 @@ function Signup() {
   };
 
   return (
-    <PhoneScreen title="가입 신청" subtitle="관리자가 공무원증을 확인하고 승인해요" footer={<BigButton onClick={submit}>가입 신청</BigButton>}>
-      <Link to="/login" className="-mt-1 mb-3 inline-flex items-center text-sm text-muted-foreground"><ChevronLeft className="size-4" /> 로그인으로</Link>
+    <PhoneScreen title="가입 신청" subtitle="관리자가 공무원증을 확인하고 승인해요" footer={<BigButton size="lg" onClick={submit}>가입 신청</BigButton>}>
+      <Link to="/login" className="-mt-1 mb-4 inline-flex items-center gap-0.5 text-sm font-semibold text-muted-foreground"><ChevronLeft className="size-4" /> 로그인으로</Link>
 
-      <SectionTitle hint="소방서 단위 코드예요. 모르면 소속 관리자에게 물어보세요">① 소속 소방서</SectionTitle>
-      <input className="field uppercase" value={f.orgCode} onChange={(e) => set("orgCode", e.target.value)} placeholder="CN-SB-019" />
-      {f.orgCode && <p className={cn("mt-1.5 text-sm font-semibold", org ? "text-success" : "text-destructive")}>{org ? `✓ ${org}` : "등록되지 않은 코드예요"}</p>}
+      <SectionTitle hint="소방서 단위 코드예요. 모르면 소속 관리자에게 물어보세요">
+        <Step n={1}>소속 소방서</Step>
+      </SectionTitle>
+      <input className="field uppercase tabular-nums" value={f.orgCode} onChange={(e) => set("orgCode", e.target.value)} placeholder="CN-SB-019" />
+      {f.orgCode && (
+        <p className={cn("mt-2 flex items-center gap-1.5 text-sm font-bold", org ? "text-success" : "text-destructive")}>
+          {org ? <Check className="size-4" /> : null}{org ? org : "등록되지 않은 코드예요"}
+        </p>
+      )}
       <div className="mt-3"><Label>소속 안전센터</Label><input className="field" value={f.center} onChange={(e) => set("center", e.target.value)} placeholder="서북119안전센터" /></div>
 
-      <SectionTitle>② 내 정보</SectionTitle>
-      <div className="grid grid-cols-2 gap-2">
+      <SectionTitle>
+        <Step n={2}>내 정보</Step>
+      </SectionTitle>
+      <div className="grid grid-cols-2 gap-3">
         <div><Label>이름</Label><input className="field" value={f.name} onChange={(e) => set("name", e.target.value)} placeholder="김도윤" /></div>
         <div><Label>계급</Label><select className="field" value={f.rank} onChange={(e) => set("rank", e.target.value)}>{RANKS.map((r) => <option key={r}>{r}</option>)}</select></div>
       </div>
-      <div className="mt-3"><Label>사번</Label><input className="field" value={f.employeeNo} onChange={(e) => set("employeeNo", e.target.value)} placeholder="2019-1234" /></div>
+      <div className="mt-3"><Label>사번</Label><input className="field tabular-nums" value={f.employeeNo} onChange={(e) => set("employeeNo", e.target.value)} placeholder="2019-1234" /></div>
 
-      <SectionTitle>③ 로그인 정보</SectionTitle>
+      <SectionTitle>
+        <Step n={3}>로그인 정보</Step>
+      </SectionTitle>
       <div><Label>아이디 (영문 소문자 · 숫자 4~20자)</Label><input className="field" value={f.loginId} onChange={(e) => set("loginId", e.target.value.toLowerCase())} placeholder="kimdoyun" autoCapitalize="none" /></div>
-      <div className="mt-3 grid grid-cols-2 gap-2">
+      <div className="mt-3 grid grid-cols-2 gap-3">
         <div><Label>비밀번호</Label><input className="field" type="password" value={f.pw} onChange={(e) => set("pw", e.target.value)} /></div>
         <div><Label>비밀번호 확인</Label><input className="field" type="password" value={f.pw2} onChange={(e) => set("pw2", e.target.value)} /></div>
       </div>
-      <p className={cn("mt-1.5 text-xs", f.pw && passwordOk(f.pw) ? "text-success" : "text-muted-foreground")}>8자 이상, 영문과 숫자를 섞어 주세요</p>
+      <p className={cn("mt-2 text-xs font-semibold", f.pw && passwordOk(f.pw) ? "text-success" : "text-muted-foreground")}>8자 이상, 영문과 숫자를 섞어 주세요</p>
 
-      <SectionTitle hint="관리자만 볼 수 있고, 확인이 끝나면 삭제돼요">④ 공무원증 사진</SectionTitle>
-      <label className="tile flex cursor-pointer items-center justify-center gap-2 border-dashed p-5 text-sm font-semibold">
-        {photo ? <><Check className="size-4 text-success" /> {photo}</> : <><Camera className="size-5 text-accent" /> 촬영하기 · 앨범에서 선택</>}
+      <SectionTitle hint="관리자만 볼 수 있고, 확인이 끝나면 삭제돼요">
+        <Step n={4}>공무원증 사진</Step>
+      </SectionTitle>
+      <label className={cn("tile flex cursor-pointer items-center justify-center gap-2 border-dashed p-6 text-sm font-bold transition hover:bg-surface", photo && "border-success/50 bg-success-soft/40 text-success")}>
+        {photo ? <><Check className="size-4" /> {photo}</> : <><Camera className="size-5 text-accent-deep" /> 촬영하기 · 앨범에서 선택</>}
         <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => setPhoto(e.target.files?.[0]?.name ?? null)} />
       </label>
       <p className="mt-1.5 text-xs text-muted-foreground">카메라 권한은 이때 물어요</p>
-      <label className="mt-3 flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="size-4 accent-[var(--color-accent)]" />
-        공무원증 사진 수집 · 이용에 동의합니다 (필수)
+      <label className="mt-4 flex items-start gap-2.5 rounded-xl bg-surface px-4 py-3.5 text-sm">
+        <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 size-4 shrink-0 accent-[var(--color-accent)]" />
+        <span className="leading-relaxed">공무원증 사진 수집 · 이용에 동의합니다 <b className="text-accent-deep">(필수)</b></span>
       </label>
-      {err && <div className="mt-3"><Notice tone="warn">{err}</Notice></div>}
+      {err && <div className="mt-4"><Notice tone="warn">{err}</Notice></div>}
     </PhoneScreen>
+  );
+}
+
+function Step({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-2">
+      <IconTile tone="accent" className="size-5 rounded-md p-0 text-[11px] font-extrabold">{n}</IconTile>
+      <span className="flex items-center gap-1.5">{children}</span>
+    </span>
   );
 }
