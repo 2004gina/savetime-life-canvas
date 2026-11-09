@@ -61,7 +61,7 @@ function Permissions() {
     <PhoneScreen
       title="권한 확인"
       subtitle="필요한 이유를 보고 허용해 주세요"
-      badge={<Pill tone="neutral" dot={false} className="bg-primary-foreground/12 text-primary-foreground/80">{done}/{rows.length}</Pill>}
+      badge={<Pill tone="neutral" dot={false} className="bg-primary/8 text-primary">{done}/{rows.length}</Pill>}
       footer={
         next && (
           <div className="space-y-2">

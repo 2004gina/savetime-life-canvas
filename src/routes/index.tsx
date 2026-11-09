@@ -56,7 +56,7 @@ function Home() {
       title="세이브타임"
       subtitle={`${me?.name ?? ""} ${me?.rank ?? ""} · ${me?.center ?? ""}`}
       badge={
-        <Link to="/settings" aria-label="설정" className="grid size-9 place-items-center rounded-xl bg-primary-foreground/12 text-primary-foreground/85 transition hover:bg-primary-foreground/20">
+        <Link to="/settings" aria-label="설정" className="grid size-9 place-items-center rounded-xl bg-primary/8 text-primary transition hover:bg-primary/14">
           <Settings className="size-4.5" />
         </Link>
       }

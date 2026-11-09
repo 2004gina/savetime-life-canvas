@@ -81,7 +81,7 @@ function RequestPage() {
     <PhoneScreen
       title={fallback ? "예비 추천" : "병원 응답 대기"}
       subtitle={subtitle}
-      badge={!fallback && <span className={cn("rounded-lg bg-primary-foreground/12 px-2.5 py-1.5 text-sm font-extrabold tabular-nums", remain <= 30 && "bg-destructive text-destructive-foreground")}>{mmss(Math.max(0, remain))}</span>}
+      badge={!fallback && <span className={cn("rounded-lg bg-primary/8 px-2.5 py-1.5 text-sm font-extrabold text-primary tabular-nums", remain <= 30 && "bg-destructive text-destructive-foreground")}>{mmss(Math.max(0, remain))}</span>}
       footer={
         <div className="space-y-2">
           {fallback && (canExpand ? (
