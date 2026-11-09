@@ -68,11 +68,11 @@
   --muted: oklch(0.945 0.006 252);
   --muted-foreground: oklch(0.535 0.022 260);
 
-  /* 신호(주황): 이 앱의 유일한 강조색 */
-  --accent: oklch(0.615 0.185 45);
+  /* 신호(구급 레드): 생명을 다루는 앱의 유일한 강조색 — 사이렌 · 심전도선 */
+  --accent: oklch(0.565 0.215 27);
   --accent-foreground: oklch(0.99 0 0);
-  --accent-soft: oklch(0.955 0.035 55);
-  --accent-deep: oklch(0.52 0.15 44);
+  --accent-soft: oklch(0.955 0.03 27);
+  --accent-deep: oklch(0.47 0.18 27);
 
   --success: oklch(0.505 0.12 152);
   --success-foreground: oklch(0.99 0 0);
@@ -86,7 +86,7 @@
   --border: oklch(0.905 0.008 252);
   --border-strong: oklch(0.845 0.012 252);
   --input: oklch(0.9 0.008 252);
-  --ring: oklch(0.615 0.185 45);
+  --ring: oklch(0.565 0.215 27);
 
   /* 겹 surfaces: 카드 위에 얹는 작은 칸들 */
   --surface: oklch(0.975 0.005 250);
@@ -95,13 +95,13 @@
   /* 그라디언트 · 그림자 (의미 토큰으로만 씀) */
   --gradient-header: linear-gradient(155deg, oklch(0.235 0.05 266) 0%, oklch(0.285 0.055 259) 58%, oklch(0.345 0.07 248) 100%);
   --gradient-primary: linear-gradient(140deg, oklch(0.29 0.05 264) 0%, oklch(0.21 0.045 266) 100%);
-  --gradient-accent: linear-gradient(140deg, oklch(0.66 0.19 48) 0%, oklch(0.55 0.175 40) 100%);
+  --gradient-accent: linear-gradient(140deg, oklch(0.62 0.225 29) 0%, oklch(0.5 0.2 24) 100%);
   --gradient-success: linear-gradient(140deg, oklch(0.55 0.13 152) 0%, oklch(0.45 0.115 152) 100%);
 
   --shadow-card: 0 1px 2px oklch(0.21 0.028 262 / 0.05), 0 10px 26px -18px oklch(0.21 0.028 262 / 0.16);
   --shadow-lift: 0 2px 5px oklch(0.21 0.028 262 / 0.07), 0 22px 44px -22px oklch(0.21 0.028 262 / 0.26);
   --shadow-header: 0 14px 30px -22px oklch(0.19 0.045 265 / 0.55);
-  --shadow-accent: 0 10px 22px -12px oklch(0.55 0.175 40 / 0.55);
+  --shadow-accent: 0 10px 22px -12px oklch(0.5 0.2 24 / 0.55);
   --shadow-primary: 0 10px 22px -12px oklch(0.21 0.045 266 / 0.55);
   --shadow-success: 0 10px 22px -12px oklch(0.45 0.115 152 / 0.5);
 }
@@ -257,6 +257,33 @@
 
 @utility rise-in {
   animation: rise-in 0.24s ease-out;
+}
+
+/* 심장박동: 쿵-쿵 두 번 뛰고 쉼 — 상태 점 · 긴급 표시에 */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  14% { transform: scale(1.45); opacity: 0.85; }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.3); opacity: 0.9; }
+  60% { transform: scale(1); opacity: 1; }
+}
+
+@utility heartbeat {
+  animation: heartbeat 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* 심전도선이 왼쪽에서 오른쪽으로 그려지며 흐름 (머리글 장식) */
+@keyframes ecg-draw {
+  0% { stroke-dashoffset: 320; opacity: 0; }
+  12% { opacity: 1; }
+  78% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@utility ecg-flow {
+  stroke-dasharray: 320;
+  animation: ecg-draw 3.2s linear infinite;
 }
 
 @media print {
