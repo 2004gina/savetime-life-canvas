@@ -51,7 +51,7 @@ function CallPage() {
     <PhoneScreen
       title="전화 확인"
       subtitle={`${h.name} · ${h.km}km · 약 ${h.min}분`}
-      badge={<Pill tone="call" dot={false} className="bg-primary-foreground/12 text-primary-foreground/85">응급실直通</Pill>}
+      badge={<Pill tone="call" dot={false} className="bg-primary-foreground/12 text-primary-foreground/85">응급실 직통</Pill>}
       footer={<BigButton variant="outline" onClick={() => (inPhone ? run(actions.phoneDismiss()) : nav({ to: "/request" }))}>← 요청 화면으로</BigButton>}
     >
       <ProgressStrip />

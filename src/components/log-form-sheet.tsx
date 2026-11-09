@@ -55,13 +55,13 @@ export function LogFormSheet({ f, onClose }: { f: LogData; onClose: () => void }
   return (
     <div className="print-root fixed inset-0 z-50 flex flex-col bg-muted">
       <div className="no-print flex items-center gap-2 border-b bg-card px-4 py-3">
-        <button onClick={onClose} aria-label="닫기" className="rounded-md p-1.5 hover:bg-muted"><X className="size-5" /></button>
-        <div className="flex-1">
-          <p className="font-bold">제출용 서식 (별지 제5호서식)</p>
-          <p className="text-xs text-muted-foreground">빨간 글씨·체크는 앱 기록으로 채운 칸이에요. 성명·주민번호·연락처·서명은 출력 후 직접 적어요.</p>
+        <button onClick={onClose} aria-label="닫기" className="grid size-9 place-items-center rounded-lg bg-surface-2 text-muted-foreground transition hover:bg-border"><X className="size-5" /></button>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-extrabold">제출용 서식 (별지 제5호서식)</p>
+          <p className="truncate text-xs text-muted-foreground">빨간 글씨·체크는 앱 기록으로 채운 칸이에요.</p>
         </div>
-        <button onClick={() => window.print()} className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground">
-          <Printer className="size-4" /> 인쇄 · PDF 저장
+        <button onClick={() => window.print()} className="btn-solid-primary inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-sm font-bold text-primary-foreground">
+          <Printer className="size-4" /> 인쇄 · PDF
         </button>
       </div>
       <div className="flex-1 overflow-auto p-4">
