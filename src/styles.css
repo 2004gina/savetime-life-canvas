@@ -86,7 +86,7 @@
   --border: oklch(0.905 0.008 252);
   --border-strong: oklch(0.845 0.012 252);
   --input: oklch(0.9 0.008 252);
-  --ring: oklch(0.615 0.185 45);
+  --ring: oklch(0.565 0.215 27);
 
   /* 겹 surfaces: 카드 위에 얹는 작은 칸들 */
   --surface: oklch(0.975 0.005 250);
@@ -257,6 +257,33 @@
 
 @utility rise-in {
   animation: rise-in 0.24s ease-out;
+}
+
+/* 심장박동: 쿵-쿵 두 번 뛰고 쉼 — 상태 점 · 긴급 표시에 */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  14% { transform: scale(1.45); opacity: 0.85; }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.3); opacity: 0.9; }
+  60% { transform: scale(1); opacity: 1; }
+}
+
+@utility heartbeat {
+  animation: heartbeat 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* 심전도선이 왼쪽에서 오른쪽으로 그려지며 흐름 (머리글 장식) */
+@keyframes ecg-draw {
+  0% { stroke-dashoffset: 320; opacity: 0; }
+  12% { opacity: 1; }
+  78% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@utility ecg-flow {
+  stroke-dasharray: 320;
+  animation: ecg-draw 3.2s linear infinite;
 }
 
 @media print {
