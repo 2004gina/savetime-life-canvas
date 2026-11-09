@@ -1,0 +1,130 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Pretendard Variable", Pretendard, system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info-soft: var(--info-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-frame: var(--frame);
+}
+
+:root {
+  --radius: 0.75rem;
+  --frame: oklch(0.93 0.004 250);
+  --background: oklch(0.975 0.004 85);
+  --foreground: oklch(0.22 0.03 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.03 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.03 260);
+  --primary: oklch(0.27 0.045 262);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.95 0.006 250);
+  --secondary-foreground: oklch(0.3 0.03 260);
+  --muted: oklch(0.94 0.005 250);
+  --muted-foreground: oklch(0.52 0.02 260);
+  --accent: oklch(0.6 0.17 42);
+  --accent-foreground: oklch(0.99 0 0);
+  --accent-soft: oklch(0.95 0.035 50);
+  --success: oklch(0.5 0.12 150);
+  --success-foreground: oklch(0.99 0 0);
+  --success-soft: oklch(0.95 0.04 150);
+  --warning: oklch(0.52 0.11 75);
+  --warning-soft: oklch(0.95 0.05 90);
+  --info-soft: oklch(0.96 0.012 250);
+  --destructive: oklch(0.5 0.19 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.9 0.006 250);
+  --input: oklch(0.9 0.006 250);
+  --ring: oklch(0.6 0.17 42);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-frame);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@utility field {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  padding: 0.8rem 1rem;
+  font-size: 1.05rem;
+  outline: none;
+  &:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 18%, transparent);
+  }
+}
+
+@utility tile {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+}
+
+/* 팀 초대 알림 배너가 폰 위쪽에서 슬라이드 인 (SFR-130) */
+@keyframes push-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@utility push-in {
+  animation: push-in 0.28s ease-out;
+}
+
+
+@media print {
+  @page { size: A4; margin: 8mm; }
+  body * { visibility: hidden; }
+  .print-sheet, .print-sheet * { visibility: visible; }
+  .print-root { position: static; background: none; }
+  .print-sheet { position: absolute; left: 0; top: 0; box-shadow: none; padding: 0; }
+  .no-print { display: none; }
+}
