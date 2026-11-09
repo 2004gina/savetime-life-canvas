@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Ambulance, FileText, Users, ShieldCheck, Settings, ArrowRight, BellRing, ClipboardList } from "lucide-react";
+import { Ambulance, FileText, Users, ShieldCheck, Settings, ArrowRight, BellRing } from "lucide-react";
 import { PhoneScreen, BigButton, SectionTitle, Pill, Avatar, IconTile } from "@/components/phone";
 import { useTransport } from "@/lib/transport-store";
 import { useAuth, currentAccount } from "@/lib/auth-store";
