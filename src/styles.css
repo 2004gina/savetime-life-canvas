@@ -46,7 +46,7 @@
 }
 
 :root {
-  --radius: 0.9rem;
+  --radius: 1.05rem;
 
   /* 바탕: 병원처럼 맑고 차가운 화이트 · 앱 기둥은 차가운 블루그레이 */
   --frame: oklch(0.885 0.014 245);
@@ -84,9 +84,9 @@
   --destructive: oklch(0.505 0.19 27);
   --destructive-foreground: oklch(0.99 0 0);
 
-  --border: oklch(0.905 0.008 252);
-  --border-strong: oklch(0.845 0.012 252);
-  --input: oklch(0.9 0.008 252);
+  --border: oklch(0.918 0.007 250);
+  --border-strong: oklch(0.855 0.011 250);
+  --input: oklch(0.912 0.007 250);
   --ring: oklch(0.565 0.215 27);
 
   /* 겹 surfaces: 카드 위에 얹는 작은 칸들 (차가운 톤) */
@@ -99,12 +99,12 @@
   --gradient-accent: linear-gradient(140deg, oklch(0.62 0.225 29) 0%, oklch(0.5 0.2 24) 100%);
   --gradient-success: linear-gradient(140deg, oklch(0.56 0.12 175) 0%, oklch(0.46 0.105 175) 100%);
 
-  --shadow-card: 0 1px 2px oklch(0.21 0.028 262 / 0.05), 0 10px 26px -18px oklch(0.21 0.028 262 / 0.16);
-  --shadow-lift: 0 2px 5px oklch(0.21 0.028 262 / 0.07), 0 22px 44px -22px oklch(0.21 0.028 262 / 0.26);
-  --shadow-header: 0 12px 26px -20px oklch(0.4 0.05 260 / 0.25);
-  --shadow-accent: 0 10px 22px -12px oklch(0.5 0.2 24 / 0.55);
-  --shadow-primary: 0 10px 22px -12px oklch(0.21 0.045 266 / 0.55);
-  --shadow-success: 0 10px 22px -12px oklch(0.46 0.105 175 / 0.5);
+  --shadow-card: 0 1px 2px oklch(0.3 0.03 262 / 0.04), 0 12px 32px -20px oklch(0.3 0.03 262 / 0.14);
+  --shadow-lift: 0 2px 6px oklch(0.3 0.03 262 / 0.06), 0 24px 48px -24px oklch(0.3 0.03 262 / 0.22);
+  --shadow-header: 0 12px 26px -20px oklch(0.4 0.05 260 / 0.22);
+  --shadow-accent: 0 12px 26px -14px oklch(0.5 0.2 24 / 0.5);
+  --shadow-primary: 0 12px 26px -14px oklch(0.21 0.045 266 / 0.5);
+  --shadow-success: 0 12px 26px -14px oklch(0.46 0.105 175 / 0.45);
 }
 
 @layer base {
@@ -134,10 +134,10 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-input);
   background: var(--color-card);
-  padding: 0.85rem 1rem;
+  padding: 0.9rem 1.05rem;
   font-size: 1.05rem;
   color: var(--color-foreground);
-  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.6);
+  box-shadow: 0 1px 2px oklch(0.3 0.03 262 / 0.03);
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
   &::placeholder {
@@ -190,18 +190,18 @@
   box-shadow: var(--shadow-lift);
 }
 
-/* ── 버튼 ───────────────────────────────────────────── */
+/* ── 버튼: 그라디언트 + 위쪽 얇은 하이라이트로 입체감 ── */
 @utility btn-solid-primary {
   background: var(--gradient-primary);
-  box-shadow: var(--shadow-primary);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.12), var(--shadow-primary);
 }
 @utility btn-solid-accent {
   background: var(--gradient-accent);
-  box-shadow: var(--shadow-accent);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.18), var(--shadow-accent);
 }
 @utility btn-solid-success {
   background: var(--gradient-success);
-  box-shadow: var(--shadow-success);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.15), var(--shadow-success);
 }
 
 /* ── 칩 · 단계 ──────────────────────────────────────── */
