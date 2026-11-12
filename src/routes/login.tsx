@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Ambulance, UserPlus, ChevronRight } from "lucide-react";
 import { BigButton, Label, Notice, EcgLine } from "@/components/phone";
-import { useAuth, setAuth, tryLogin, getAuth } from "@/lib/auth-store";
+import { useAuth } from "@/lib/auth-store";
+import { login } from "@/lib/auth-server";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -22,12 +23,15 @@ function Login() {
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  // 서버가 확인한다. 5번 틀리면 서버가 10분 잠그고 그 문구를 돌려준다 (SER-011)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const r = tryLogin(getAuth(), id, pw);
-    setAuth(r.patch);
-    setErr(r.error ?? "");
+    if (busy) return;
+    setBusy(true);
+    setErr((await login(id, pw)) ?? "");
+    setBusy(false);
   };
 
   return (
@@ -46,7 +50,7 @@ function Login() {
           <div><Label>아이디</Label><input className="field" value={id} onChange={(e) => setId(e.target.value)} placeholder="kimdoyun" autoComplete="username" autoCapitalize="none" /></div>
           <div><Label>비밀번호</Label><input className="field" type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="••••••••" autoComplete="current-password" /></div>
           {err && <Notice tone="warn">{err}</Notice>}
-          <BigButton size="lg" type="submit" className="mt-1">로그인</BigButton>
+          <BigButton size="lg" type="submit" className="mt-1" disabled={busy}>{busy ? "확인 중…" : "로그인"}</BigButton>
           <p className="text-center text-xs text-muted-foreground">근무 중에는 앱을 다시 열어도 로그인을 묻지 않아요</p>
         </form>
 
@@ -63,7 +67,6 @@ function Login() {
           <p className="text-center text-xs text-muted-foreground">
             비밀번호를 잊으면 소속 관리자에게 초기화를 요청하세요 · 5번 틀리면 10분 동안 잠겨요
           </p>
-          <p className="mt-2 text-center text-xs text-muted-foreground/70">시연 계정: kimdoyun / savetime1</p>
         </div>
       </div>
     </div>

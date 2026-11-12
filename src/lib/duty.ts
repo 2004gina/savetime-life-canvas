@@ -1,5 +1,6 @@
-/** 근무 종료 · 로그아웃 · 탈퇴 (SFR-070 · 071 · 113). 팀의 마지막 대원이면 진행 중 이송을 '취소'로 끝냄 */
-import { getAuth, logout, withdraw, type AuthState } from "@/lib/auth-store";
+/** 근무 종료 · 로그아웃 · 탈퇴 (SFR-070 · 071 · 113). 팀의 마지막 대원이면 진행 중 이송은 서버가 '취소'로 끝낸다 */
+import { getAuth, type AuthState } from "@/lib/auth-store";
+import { logoutServer, withdrawServer } from "@/lib/auth-server";
 import { actions, getEngine } from "@/lib/engine";
 import { ACTIVE } from "@/lib/domain/stateMachine";
 
@@ -11,8 +12,10 @@ export const hasActiveTransport = () => {
 /** 내가 빠지면 팀에 아무도 안 남는지 */
 export const isLastMember = (a: AuthState = getAuth()) => (a.duty?.members.length ?? 0) === 0;
 
-export function leave(kind: "duty_end" | "logout" | "withdrawal") {
-  if (hasActiveTransport() && isLastMember()) actions.cancel(kind);
-  if (kind === "withdrawal") withdraw();
-  else logout();
+export async function leave(kind: "duty_end" | "logout" | "withdrawal"): Promise<string | null> {
+  // 이송은 아직 앱 안 엔진이 흉내 낸다 (② PR 에서 서버로). 이 기기의 진행 중 이송도 비운다
+  if (hasActiveTransport()) actions.reset();
+  if (kind === "withdrawal") return withdrawServer();
+  await logoutServer();
+  return null;
 }

@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Camera, Check, ChevronLeft, Building2 } from "lucide-react";
+import { Camera, Check, ChevronLeft } from "lucide-react";
 import { PhoneScreen, BigButton, Label, Notice, SectionTitle, IconTile } from "@/components/phone";
-import { useAuth, setAuth, ORGS, RANKS, signupError, passwordOk } from "@/lib/auth-store";
+import { useAuth, currentAccount, RANKS, signupError, passwordOk } from "@/lib/auth-store";
+import { signup } from "@/lib/auth-server";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/signup")({
@@ -21,45 +22,34 @@ export const Route = createFileRoute("/signup")({
 function Signup() {
   const a = useAuth();
   const [f, setF] = useState({ orgCode: "", name: "", rank: "소방교", center: "", employeeNo: "", loginId: "", pw: "", pw2: "" });
-  const [photo, setPhoto] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const photo = file?.name ?? null;
   const [agree, setAgree] = useState(false);
   const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
   const set = (k: keyof typeof f, v: string) => setF({ ...f, [k]: v });
-  const code = f.orgCode.trim().toUpperCase();
-  const org = ORGS[code];
+  // 반려된 뒤 다시 신청: 같은 계정이라 아이디·비밀번호는 묻지 않는다
+  const reapply = currentAccount(a)?.status === "rejected";
 
-  const submit = () => {
-    const e = signupError({ ...f, photo, agree }, a.accounts);
+  const submit = async () => {
+    const e = signupError({ ...f, photo, agree, ...(reapply ? { loginId: "reapply", pw: "reapply1" } : {}) });
     if (e) return setErr(e);
-    if (f.pw !== f.pw2) return setErr("비밀번호 확인이 달라요");
-    const d = new Date();
-    const p = (n: number) => String(n).padStart(2, "0");
-    setAuth({
-      accounts: {
-        ...a.accounts,
-        [f.loginId]: {
-          loginId: f.loginId, password: f.pw, name: f.name.trim(), rank: f.rank, orgCode: code, orgName: org ?? "", center: f.center.trim(),
-          employeeNo: f.employeeNo.trim(), status: "pending",
-          appliedAt: `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`,
-        },
-      },
-      session: f.loginId,
-    });
+    if (!reapply && f.pw !== f.pw2) return setErr("비밀번호 확인이 달라요");
+    if (!file || busy) return;
+    // 소방서 코드가 맞는지·아이디가 겹치는지는 서버가 보고 문구를 돌려준다. 통과하면 '승인 대기' 화면으로
+    setBusy(true);
+    setErr((await signup({ ...f, photo: file })) ?? "");
+    setBusy(false);
   };
 
   return (
-    <PhoneScreen title="가입 신청" subtitle="관리자가 공무원증을 확인하고 승인해요" footer={<BigButton size="lg" onClick={submit}>가입 신청</BigButton>}>
+    <PhoneScreen title="가입 신청" subtitle="관리자가 공무원증을 확인하고 승인해요" footer={<BigButton size="lg" onClick={() => void submit()} disabled={busy}>{busy ? "보내는 중…" : reapply ? "다시 신청" : "가입 신청"}</BigButton>}>
       <Link to="/login" className="-mt-1 mb-4 inline-flex items-center gap-0.5 text-sm font-semibold text-muted-foreground"><ChevronLeft className="size-4" /> 로그인으로</Link>
 
       <SectionTitle hint="소방서 단위 코드예요. 모르면 소속 관리자에게 물어보세요">
         <Step n={1}>소속 소방서</Step>
       </SectionTitle>
       <input className="field uppercase tabular-nums" value={f.orgCode} onChange={(e) => set("orgCode", e.target.value)} placeholder="CN-SB-019" />
-      {f.orgCode && (
-        <p className={cn("mt-2 flex items-center gap-1.5 text-sm font-bold", org ? "text-success" : "text-destructive")}>
-          {org ? <Check className="size-4" /> : null}{org ? org : "등록되지 않은 코드예요"}
-        </p>
-      )}
       <div className="mt-3"><Label>소속 안전센터</Label><input className="field" value={f.center} onChange={(e) => set("center", e.target.value)} placeholder="서북119안전센터" /></div>
 
       <SectionTitle>
@@ -71,6 +61,7 @@ function Signup() {
       </div>
       <div className="mt-3"><Label>사번</Label><input className="field tabular-nums" value={f.employeeNo} onChange={(e) => set("employeeNo", e.target.value)} placeholder="2019-1234" /></div>
 
+      {!reapply && (<>
       <SectionTitle>
         <Step n={3}>로그인 정보</Step>
       </SectionTitle>
@@ -80,13 +71,14 @@ function Signup() {
         <div><Label>비밀번호 확인</Label><input className="field" type="password" value={f.pw2} onChange={(e) => set("pw2", e.target.value)} /></div>
       </div>
       <p className={cn("mt-2 text-xs font-semibold", f.pw && passwordOk(f.pw) ? "text-success" : "text-muted-foreground")}>8자 이상, 영문과 숫자를 섞어 주세요</p>
+      </>)}
 
       <SectionTitle hint="관리자만 볼 수 있고, 확인이 끝나면 삭제돼요">
         <Step n={4}>공무원증 사진</Step>
       </SectionTitle>
       <label className={cn("tile flex cursor-pointer items-center justify-center gap-2 border-dashed p-6 text-sm font-bold transition hover:bg-surface", photo && "border-success/50 bg-success-soft/40 text-success")}>
         {photo ? <><Check className="size-4" /> {photo}</> : <><Camera className="size-5 text-accent-deep" /> 촬영하기 · 앨범에서 선택</>}
-        <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => setPhoto(e.target.files?.[0]?.name ?? null)} />
+        <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       </label>
       <p className="mt-1.5 text-xs text-muted-foreground">카메라 권한은 이때 물어요</p>
       <label className="mt-4 flex items-start gap-2.5 rounded-xl bg-surface px-4 py-3.5 text-sm">

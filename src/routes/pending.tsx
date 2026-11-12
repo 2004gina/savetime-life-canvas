@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Hourglass, XCircle, BellRing } from "lucide-react";
-import { toast } from "sonner";
 import { PhoneScreen, BigButton, Pill, IconTile, KeyVal, Notice } from "@/components/phone";
-import { useAuth, setAuth, logout, currentAccount, type Account } from "@/lib/auth-store";
+import { useAuth, currentAccount } from "@/lib/auth-store";
+import { refreshMe } from "@/lib/auth-server";
+import { leave } from "@/lib/duty";
 
 export const Route = createFileRoute("/pending")({
   head: () => ({
@@ -19,22 +20,18 @@ export const Route = createFileRoute("/pending")({
 /** SFR-022: 승인 전에는 '승인 대기 중' 화면만. 승인 · 반려 결과는 알림 */
 function Pending() {
   const a = useAuth();
+  const nav = useNavigate();
   const acc = currentAccount(a);
   if (!acc) return null;
-  const update = (patch: Partial<Account>) => setAuth({ accounts: { ...a.accounts, [acc.loginId]: { ...acc, ...patch } } });
   const rejected = acc.status === "rejected";
-
-  const reapply = () => {
-    const accounts = { ...a.accounts };
-    delete accounts[acc.loginId];
-    setAuth({ accounts, session: null });
-  };
+  // 반려되면 같은 계정으로 내용·사진만 다시 보낸다 (가입 화면이 PUT /me/signup)
+  const reapply = () => nav({ to: "/signup" });
 
   return (
     <PhoneScreen
       title={rejected ? "가입이 반려됐어요" : "승인 대기 중"}
       subtitle={rejected ? "내용을 고쳐 다시 신청해 주세요" : "승인 전에는 다른 기능을 쓸 수 없어요"}
-      footer={rejected ? <BigButton size="lg" onClick={reapply}>다시 가입 신청</BigButton> : <BigButton variant="outline" onClick={logout}>로그아웃</BigButton>}
+      footer={rejected ? <BigButton size="lg" onClick={reapply}>다시 가입 신청</BigButton> : <BigButton variant="outline" onClick={() => void leave("logout")}>로그아웃</BigButton>}
     >
       <div className="flex flex-col items-center py-8 text-center">
         {rejected ? (
@@ -60,10 +57,9 @@ function Pending() {
       </dl>
 
       {!rejected && (
-        <div className="mt-7 flex justify-center gap-3 text-xs">
-          <button className="rounded-lg bg-surface px-3 py-2 font-semibold text-muted-foreground transition hover:bg-surface-2" onClick={() => { update({ status: "approved" }); toast.success("가입이 승인됐어요. 근무를 시작할 수 있어요"); }}>시연: 관리자가 승인함</button>
-          <button className="rounded-lg bg-surface px-3 py-2 font-semibold text-muted-foreground transition hover:bg-surface-2" onClick={() => { update({ status: "rejected", rejectReason: "공무원증 사진이 흐려서 확인할 수 없어요" }); toast.error("가입이 반려됐어요"); }}>시연: 반려함</button>
-        </div>
+        <button className="mt-7 w-full text-center text-xs font-semibold text-muted-foreground underline" onClick={() => void refreshMe()}>
+          지금 결과 다시 확인
+        </button>
       )}
     </PhoneScreen>
   );

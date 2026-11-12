@@ -2,13 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { Ambulance, X, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth, getAuth, setAuth, demoInvite, expiredInvites, type Incoming } from "@/lib/auth-store";
-
-let demoFired = false;
+import { useAuth, getAuth, setAuth, expiredInvites, type Incoming } from "@/lib/auth-store";
 
 /**
  * SFR-159 · SFR-130: 팀 초대가 오면 폰 위 '팀 초대' 알림 배너(진동)로 알리고,
- * 탭하면 /invite 화면으로 들어간다. 초대는 5분 뒤 만료 처리.
+ * 탭하면 /invite 화면으로 들어간다. 초대는 5분 뒤 만료 처리. 초대 자체는 서버가 실시간으로 보낸다.
  */
 export function InvitePush() {
   const a = useAuth();
@@ -17,15 +15,7 @@ export function InvitePush() {
   const [banner, setBanner] = useState<Incoming | null>(null);
   const seen = useRef<Set<string>>(new Set());
 
-  // 시연: 로그인·승인까지 끝났고 아직 근무 전이면 4초 뒤 이보준 대원이 나를 초대
-  // (타이머를 정리하지 않음: 개발 모드의 이중 실행에서도 초대 한 번은 반드시 오게)
-  useEffect(() => {
-    if (demoFired || a.duty || a.incoming.length || !a.session) return;
-    const acc = a.accounts[a.session];
-    if (!acc || acc.status !== "approved") return;
-    demoFired = true;
-    setTimeout(() => setAuth(demoInvite(getAuth())), 4000);
-  }, [a.session, a.duty, a.incoming.length, a.accounts]);
+  // 초대는 서버 실시간 이벤트(team.invited)로 온다 (auth-server.ts)
 
 
   // 새 초대 도착 → 배너 + 진동, 6초 뒤 자동 숨김

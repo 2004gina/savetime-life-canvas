@@ -3,9 +3,8 @@ import { useEffect, useState } from "react";
 import { BellRing, Check, X, Users, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneScreen, BigButton, SectionTitle, Notice, Pill, Avatar, IconTile } from "@/components/phone";
-import {
-  useAuth, getAuth, setAuth, acceptInvite, rejectInvite, inviteLeft, type Incoming,
-} from "@/lib/auth-store";
+import { useAuth, inviteLeft, type Incoming } from "@/lib/auth-store";
+import { acceptInvite, declineInvite } from "@/lib/auth-server";
 
 export const Route = createFileRoute("/invite")({
   head: () => ({
@@ -32,9 +31,8 @@ function InvitePage() {
     return () => clearInterval(t);
   }, []);
 
-  const accept = (inv: Incoming) => {
-    const r = acceptInvite(getAuth(), inv.id);
-    setAuth(r.patch);
+  const accept = async (inv: Incoming) => {
+    const r = await acceptInvite(inv.id, inv.role);
     if (r.error) {
       toast(r.error);
       return;
@@ -43,10 +41,8 @@ function InvitePage() {
     nav({ to: "/" });
   };
 
-  const reject = (inv: Incoming) => {
-    const r = rejectInvite(getAuth(), inv.id);
-    setAuth(r.patch);
-    toast(r.message ?? "초대를 거절했어요");
+  const reject = async (inv: Incoming) => {
+    toast(await declineInvite(inv.id));
   };
 
   if (a.incoming.length === 0) {
@@ -57,7 +53,6 @@ function InvitePage() {
           <p className="mt-4 text-base font-extrabold">대기 중인 초대가 없어요</p>
         </div>
         <Notice tone="info">초대는 초대받은 대원의 폰에 '팀 초대' 알림으로 와요. 5분 안에 수락해야 팀에 들어갈 수 있어요.</Notice>
-        <p className="mt-3 text-xs text-muted-foreground">시연: 설정 → '이보준이 나를 팀 4821에 초대'를 누르면 알림이 다시 와요.</p>
       </PhoneScreen>
     );
   }
@@ -86,7 +81,7 @@ function InvitePage() {
                 <Avatar name={inv.from.name} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-extrabold">{inv.from.name} <span className="text-sm font-semibold text-muted-foreground">{inv.from.rank}</span></p>
-                  <p className="truncate text-xs text-muted-foreground">{inv.from.center} · 사번 뒤 {inv.from.employeeNo.slice(-4)}</p>
+                  <p className="truncate text-xs text-muted-foreground">같은 소방서 대원</p>
                 </div>
               </div>
 
@@ -95,7 +90,7 @@ function InvitePage() {
                   <p className="text-[11px] font-bold tracking-wide text-muted-foreground uppercase">들어갈 팀</p>
                   <p className="mt-1 text-3xl leading-none font-extrabold tracking-[0.22em] tabular-nums">{inv.teamCode}</p>
                 </div>
-                <Pill tone="call" dot={false}>요청 역할 {inv.role}</Pill>
+                <Pill tone="call" dot={false}>내 역할 {inv.role}</Pill>
               </div>
 
               <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
@@ -104,8 +99,8 @@ function InvitePage() {
               </p>
 
               <div className="grid grid-cols-2 gap-2">
-                <BigButton size="lg" onClick={() => accept(inv)}><Check className="size-5" /> 수락</BigButton>
-                <BigButton size="lg" variant="outline" onClick={() => reject(inv)}><X className="size-5" /> 거절</BigButton>
+                <BigButton size="lg" onClick={() => void accept(inv)}><Check className="size-5" /> 수락</BigButton>
+                <BigButton size="lg" variant="outline" onClick={() => void reject(inv)}><X className="size-5" /> 거절</BigButton>
               </div>
             </div>
           </div>
