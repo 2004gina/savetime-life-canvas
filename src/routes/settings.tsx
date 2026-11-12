@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { PhoneScreen, BigButton, SectionTitle, Notice, KeyVal, Pill } from "@/components/phone";
-import { useAuth, setAuth, resetAuth, getAuth, currentAccount, isIOS, demoInvite, INVITE_MS } from "@/lib/auth-store";
+import { toast } from "sonner";
+import { useAuth, resetAuth, currentAccount, isIOS } from "@/lib/auth-store";
 import { actions } from "@/lib/engine";
 import { hasActiveTransport, isLastMember, leave } from "@/lib/duty";
 
@@ -45,7 +46,7 @@ function Settings() {
           </p>
           <div className="grid grid-cols-2 gap-2">
             <BigButton variant="outline" onClick={() => setAsk(null)}>아니요</BigButton>
-            <BigButton variant="danger" onClick={() => { leave(ask); setAsk(null); }}>{KIND_LABEL[ask]}</BigButton>
+            <BigButton variant="danger" onClick={async () => { const kind = ask; setAsk(null); const e = await leave(kind); if (e) toast(e); }}>{KIND_LABEL[ask]}</BigButton>
           </div>
         </div>
       )}
@@ -69,19 +70,15 @@ function Settings() {
       <SectionTitle>계정</SectionTitle>
       <div className="tile divide-y divide-border">
         <KeyVal label="아이디" value={acc?.loginId ?? "-"} />
-        <KeyVal label="사번" value={acc?.employeeNo ?? "-"} />
+        <KeyVal label="소속" value={acc ? `${acc.orgName} · ${acc.center}` : "-"} />
         <KeyVal label="상태" value={<Pill tone="ok">승인됨</Pill>} />
         <button className="w-full px-4 py-3.5 text-left text-sm font-bold transition hover:bg-surface" onClick={() => setAsk("logout")}>로그아웃</button>
         <button className="w-full px-4 py-3.5 text-left text-sm font-bold text-destructive transition hover:bg-destructive/5" onClick={() => setAsk("withdrawal")}>회원 탈퇴</button>
       </div>
 
-      <SectionTitle hint="실제 서버를 붙이면 사라지는 버튼들">시연</SectionTitle>
+      <SectionTitle hint="이 기기에 남은 위치 동의·권한 기록까지 지우고 처음 쓰는 날 화면부터 다시 봐요">이 기기</SectionTitle>
       <div className="tile divide-y divide-border text-sm">
-        <DemoRow onClick={() => setAuth(demoInvite(getAuth()))}>이보준이 나를 팀 4821에 초대 (팀 초대 알림)</DemoRow>
-        <DemoRow onClick={() => setAuth({ incoming: getAuth().incoming.map((i) => ({ ...i, sentAt: Date.now() - INVITE_MS })) })}>초대 5분 지나게 (만료)</DemoRow>
-        <DemoRow onClick={() => a.duty && setAuth({ duty: { ...a.duty, startedAt: new Date(Date.now() - 14 * 3600_000).toISOString() } })}>근무 14시간 지나기</DemoRow>
-        <DemoRow onClick={() => setAuth({ serverMinVersion: "9.0.0" })}>앱 최소 버전 올리기 (업데이트 안내)</DemoRow>
-        <DemoRow onClick={() => { actions.reset(); resetAuth(); nav({ to: "/welcome" }); }}>처음 쓰는 날부터 다시 보기</DemoRow>
+        <DemoRow onClick={async () => { await leave("logout"); actions.reset(); resetAuth(); nav({ to: "/welcome" }); }}>로그아웃하고 처음 쓰는 날부터 다시 보기</DemoRow>
       </div>
     </PhoneScreen>
   );

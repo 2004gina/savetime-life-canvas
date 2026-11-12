@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Download, Smartphone } from "lucide-react";
 import { PhoneScreen, BigButton, IconTile, KeyVal } from "@/components/phone";
-import { useAuth, setAuth, APP_VERSION } from "@/lib/auth-store";
+import { useAuth, APP_VERSION } from "@/lib/auth-store";
 
 export const Route = createFileRoute("/update")({
   head: () => ({
@@ -29,9 +29,6 @@ function Update() {
         <KeyVal label="설치된 버전" value={<span className="tabular-nums">{APP_VERSION}</span>} />
         <KeyVal label="최소 지원 버전" value={<span className="tabular-nums text-accent-deep">{a.serverMinVersion}</span>} />
       </div>
-      <button className="mt-7 w-full text-center text-xs font-semibold text-muted-foreground underline" onClick={() => setAuth({ serverMinVersion: "1.0.0" })}>
-        시연: 최소 버전 되돌리기
-      </button>
     </PhoneScreen>
   );
 }

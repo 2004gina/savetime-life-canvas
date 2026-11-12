@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useAuth, getAuth, currentAccount, dutyExpired, versionBelow, APP_VERSION, isIOS, type AuthState } from "@/lib/auth-store";
 import { useEngine } from "@/lib/engine";
 import { hasActiveTransport, leave } from "@/lib/duty";
+import { loadConfig, resumeSession } from "@/lib/auth-server";
 
 const PRE_LOGIN = ["/update", "/welcome", "/permissions", "/login", "/signup", "/pending"];
 
@@ -21,8 +22,9 @@ export function gateTarget(a: AuthState, path: string): string | null {
   if (!permissionsDone(a)) return want("/permissions");
   const acc = currentAccount(a);
   if (!acc) return want("/login", ["/login", "/signup"]);
-  if (acc.status !== "approved") return want("/pending");
-  if (!a.duty) return want("/duty", ["/duty", "/invite"]);
+  // 반려되면 가입 화면에서 다시 신청할 수 있다
+  if (acc.status !== "approved") return want("/pending", acc.status === "rejected" ? ["/pending", "/signup"] : ["/pending"]);
+  if (!a.duty?.started) return want("/duty", ["/duty", "/invite"]);
   if (PRE_LOGIN.includes(path) || path === "/duty") return "/";
   return null;
 }
@@ -38,6 +40,14 @@ export function AppGate() {
     const to = gateTarget(a, path);
     if (to) nav({ to: to as "/", replace: true });
   }, [a, path, nav]);
+
+  // 서버 설정(최소 버전·기능 토글)은 켜질 때와 1분마다, 로그인돼 있으면 서버 상태로 다시 맞춘다 (SFR-142)
+  useEffect(() => {
+    void loadConfig();
+    void resumeSession();
+    const t = setInterval(() => void loadConfig(), 60_000);
+    return () => clearInterval(t);
+  }, []);
 
   // 이송 건 상태 → 화면
   const prev = useRef<string>("");
@@ -58,7 +68,7 @@ export function AppGate() {
   useEffect(() => {
     const check = () => {
       if (dutyExpired(getAuth().duty) && !hasActiveTransport()) {
-        leave("duty_end");
+        void leave("duty_end");
         toast("근무 시작 후 14시간이 지나 근무를 마쳤어요. 다시 로그인해 주세요");
       }
     };
