@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
-      { title: "가입 신청 · 세이브타임" },
+      { title: "가입 신청 · 골든타임즈" },
       { name: "description", content: "소속 소방서 코드 · 이름 · 계급 · 사번과 공무원증 사진으로 가입을 신청해요." },
-      { property: "og:title", content: "가입 신청 · 세이브타임" },
+      { property: "og:title", content: "가입 신청 · 골든타임즈" },
       { property: "og:description", content: "119 구급대원만 쓸 수 있게 공무원증으로 가입" },
     ],
   }),

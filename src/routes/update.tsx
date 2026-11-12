@@ -6,9 +6,9 @@ import { useAuth, setAuth, APP_VERSION } from "@/lib/auth-store";
 export const Route = createFileRoute("/update")({
   head: () => ({
     meta: [
-      { title: "업데이트가 필요해요 · 세이브타임" },
+      { title: "업데이트가 필요해요 · 골든타임즈" },
       { name: "description", content: "지금 버전으로는 쓸 수 없어요. 앱을 업데이트해 주세요." },
-      { property: "og:title", content: "업데이트가 필요해요 · 세이브타임" },
+      { property: "og:title", content: "업데이트가 필요해요 · 골든타임즈" },
       { property: "og:description", content: "최소 지원 버전보다 낮은 앱은 기능을 막아요" },
     ],
   }),

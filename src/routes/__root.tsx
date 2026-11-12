@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "세이브타임 · 구급대원" },
+      { title: "골든타임즈 · 구급대원" },
       { name: "description", content: "119 구급대원 응급실 실시간 이송 요청 앱" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

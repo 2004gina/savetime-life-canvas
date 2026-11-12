@@ -10,9 +10,9 @@ import { STATUS_LABEL } from "@/components/progress";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "근무 중 · 세이브타임 구급대원" },
+      { title: "근무 중 · 골든타임즈 구급대원" },
       { name: "description", content: "근무 상태와 팀을 확인하고 새 이송을 시작해요." },
-      { property: "og:title", content: "세이브타임 구급대원 앱" },
+      { property: "og:title", content: "골든타임즈 구급대원 앱" },
       { property: "og:description", content: "119 구급대원용 응급실 실시간 이송 요청 앱" },
     ],
   }),
@@ -53,7 +53,7 @@ function Home() {
 
   return (
     <PhoneScreen
-      title="세이브타임"
+      title="골든타임즈"
       subtitle={`${me?.name ?? ""} ${me?.rank ?? ""} · ${me?.center ?? ""}`}
       badge={
         <Link to="/settings" aria-label="설정" className="grid size-9 place-items-center rounded-xl bg-primary/8 text-primary transition hover:bg-primary/14">
