@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/request")({
   head: () => ({
     meta: [
-      { title: "병원 응답 대기 · 세이브타임" },
+      { title: "병원 응답 대기 · 골든타임즈" },
       { name: "description", content: "여러 응급실에 동시에 요청하고 2분 안에 승인을 받아요." },
-      { property: "og:title", content: "병원 응답 대기 · 세이브타임" },
+      { property: "og:title", content: "병원 응답 대기 · 골든타임즈" },
       { property: "og:description", content: "승인 칸, 거리순 추천, 예비 추천, 확정" },
     ],
   }),

@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/duty")({
   head: () => ({
     meta: [
-      { title: "근무 시작 · 세이브타임" },
+      { title: "근무 시작 · 골든타임즈" },
       { name: "description", content: "4자리 팀 코드 · QR · 대원 목록으로 오늘의 팀을 맺고 운전 · 처치 역할을 나눠요." },
-      { property: "og:title", content: "근무 시작 · 세이브타임" },
+      { property: "og:title", content: "근무 시작 · 골든타임즈" },
       { property: "og:description", content: "근무마다 팀 맺기, 운전은 팀에 1명" },
     ],
   }),

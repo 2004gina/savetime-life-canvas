@@ -17,9 +17,9 @@ export const Route = createFileRoute("/call/$hospitalId")({
   },
   head: () => ({
     meta: [
-      { title: "전화 확인 · 세이브타임" },
+      { title: "전화 확인 · 골든타임즈" },
       { name: "description", content: "요청을 열어 둔 채 응급실에 직접 전화로 확인해요." },
-      { property: "og:title", content: "전화 확인 · 세이브타임" },
+      { property: "og:title", content: "전화 확인 · 골든타임즈" },
       { property: "og:description", content: "응급실 원터치 전화와 통화 결과 기록" },
     ],
   }),

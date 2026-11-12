@@ -6,9 +6,9 @@ import { useAuth, setAuth, isIOS, type Perm } from "@/lib/auth-store";
 export const Route = createFileRoute("/permissions")({
   head: () => ({
     meta: [
-      { title: "권한 확인 · 세이브타임" },
+      { title: "권한 확인 · 골든타임즈" },
       { name: "description", content: "위치 · 전화 · 알림 권한을 이유와 함께 순서대로 물어요." },
-      { property: "og:title", content: "권한 확인 · 세이브타임" },
+      { property: "og:title", content: "권한 확인 · 골든타임즈" },
       { property: "og:description", content: "위치 → 전화 → 알림, 권한마다 이유 한 줄" },
     ],
   }),

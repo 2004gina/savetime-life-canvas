@@ -12,9 +12,9 @@ import { LogFormSheet, type LogData } from "@/components/log-form-sheet";
 export const Route = createFileRoute("/log")({
   head: () => ({
     meta: [
-      { title: "구급활동일지 · 세이브타임" },
+      { title: "구급활동일지 · 골든타임즈" },
       { name: "description", content: "이송 중 입력한 정보로 자동 작성된 구급활동일지를 확인하고 고쳐요." },
-      { property: "og:title", content: "구급활동일지 · 세이브타임" },
+      { property: "og:title", content: "구급활동일지 · 골든타임즈" },
       { property: "og:description", content: "119구조·구급에 관한 법률 시행규칙 별지 제5호서식 기반" },
     ],
   }),

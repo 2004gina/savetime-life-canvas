@@ -6,9 +6,9 @@ import { useAuth, setAuth } from "@/lib/auth-store";
 export const Route = createFileRoute("/welcome")({
   head: () => ({
     meta: [
-      { title: "세이브타임 시작하기 · 위치정보 안내" },
+      { title: "골든타임즈 시작하기 · 위치정보 안내" },
       { name: "description", content: "위치를 왜 쓰는지, 무엇을 얼마나 보관하는지 먼저 알려드려요." },
-      { property: "og:title", content: "세이브타임 시작하기" },
+      { property: "og:title", content: "골든타임즈 시작하기" },
       { property: "og:description", content: "위치정보 수집 · 이용 안내와 필수 동의" },
     ],
   }),
@@ -29,7 +29,7 @@ function Welcome() {
 
   if (a.consent === "refused") {
     return (
-      <PhoneScreen title="세이브타임" footer={<BigButton size="lg" onClick={() => setAuth({ consent: "unknown" })}>다시 동의하기</BigButton>}>
+      <PhoneScreen title="골든타임즈" footer={<BigButton size="lg" onClick={() => setAuth({ consent: "unknown" })}>다시 동의하기</BigButton>}>
         <div className="flex flex-col items-center py-16 text-center">
           <IconTile tone="warn" className="size-16 rounded-full"><MapPinOff className="size-7 text-warning" /></IconTile>
           <p className="mt-5 text-lg font-extrabold">위치 동의가 있어야 사용할 수 있어요</p>
@@ -40,7 +40,7 @@ function Welcome() {
 
   return (
     <PhoneScreen
-      title="세이브타임 시작하기"
+      title="골든타임즈 시작하기"
       subtitle="위치정보 수집 · 이용 안내 (필수)"
       footer={
         <div className="space-y-2">

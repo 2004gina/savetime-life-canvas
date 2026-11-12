@@ -10,9 +10,9 @@ import {
 export const Route = createFileRoute("/invite")({
   head: () => ({
     meta: [
-      { title: "팀 초대 · 세이브타임" },
+      { title: "팀 초대 · 골든타임즈" },
       { name: "description", content: "다른 대원이 보낸 팀 초대를 확인하고 5분 안에 수락·거절해요." },
-      { property: "og:title", content: "팀 초대 · 세이브타임" },
+      { property: "og:title", content: "팀 초대 · 골든타임즈" },
       { property: "og:description", content: "초대는 5분 뒤 만료, 수락해야 팀원이 돼요" },
     ],
   }),

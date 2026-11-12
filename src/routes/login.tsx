@@ -7,9 +7,9 @@ import { useAuth, setAuth, tryLogin, getAuth } from "@/lib/auth-store";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "로그인 · 세이브타임 구급대원" },
+      { title: "로그인 · 골든타임즈 구급대원" },
       { name: "description", content: "119 구급대원 전용 로그인. 근무 중에는 다시 묻지 않아요." },
-      { property: "og:title", content: "로그인 · 세이브타임" },
+      { property: "og:title", content: "로그인 · 골든타임즈" },
       { property: "og:description", content: "병원 승인 후 출발하는 이송" },
     ],
   }),
@@ -39,7 +39,7 @@ function Login() {
       <div className="relative flex flex-1 flex-col">
         <span className="grid size-14 place-items-center rounded-2xl bg-accent shadow-[var(--shadow-accent)]"><Ambulance className="size-7 text-accent-foreground" /></span>
         <p className="mt-6 text-[11px] font-bold tracking-[0.18em] text-accent-deep uppercase">119 구급대원 전용</p>
-        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">세이브타임</h1>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">골든타임즈</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">병원 승인 후 출발하는 이송</p>
 
         <form onSubmit={submit} className="elevate-lg mt-9 space-y-3.5 rounded-2xl bg-card p-5 text-card-foreground">

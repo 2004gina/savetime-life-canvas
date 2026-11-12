@@ -7,9 +7,9 @@ import { useAuth, setAuth, logout, currentAccount, type Account } from "@/lib/au
 export const Route = createFileRoute("/pending")({
   head: () => ({
     meta: [
-      { title: "승인 대기 중 · 세이브타임" },
+      { title: "승인 대기 중 · 골든타임즈" },
       { name: "description", content: "관리자가 공무원증을 확인하고 있어요. 승인되면 알림으로 알려드려요." },
-      { property: "og:title", content: "승인 대기 중 · 세이브타임" },
+      { property: "og:title", content: "승인 대기 중 · 골든타임즈" },
       { property: "og:description", content: "승인 전에는 다른 기능을 쓸 수 없어요" },
     ],
   }),

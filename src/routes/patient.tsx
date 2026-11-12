@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/patient")({
   head: () => ({
     meta: [
-      { title: "환자 정보 입력 · 세이브타임" },
+      { title: "환자 정보 입력 · 골든타임즈" },
       { name: "description", content: "3단계로 환자 상태를 입력하고 병원에 요청해요." },
-      { property: "og:title", content: "환자 정보 입력 · 세이브타임" },
+      { property: "og:title", content: "환자 정보 입력 · 골든타임즈" },
       { property: "og:description", content: "병원 등급, 주 증상, 활력징후, 통증·외상·과거력 입력" },
     ],
   }),

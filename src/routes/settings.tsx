@@ -8,9 +8,9 @@ import { hasActiveTransport, isLastMember, leave } from "@/lib/duty";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "설정 · 세이브타임" },
+      { title: "설정 · 골든타임즈" },
       { name: "description", content: "근무 종료 · 로그아웃 · 권한 · 회원 탈퇴" },
-      { property: "og:title", content: "설정 · 세이브타임" },
+      { property: "og:title", content: "설정 · 골든타임즈" },
       { property: "og:description", content: "구급대원 앱 설정" },
     ],
   }),

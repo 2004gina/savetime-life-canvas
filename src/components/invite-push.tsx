@@ -69,7 +69,7 @@ export function InvitePush() {
           }}
         >
           <p className="flex items-center justify-between text-[11px] text-muted-foreground">
-            <span className="font-extrabold text-foreground">세이브타임</span>
+            <span className="font-extrabold text-foreground">골든타임즈</span>
             <span className="flex items-center gap-1"><span className="size-1.5 rounded-full bg-accent" />지금</span>
           </p>
           <p className="mt-0.5 truncate text-sm font-bold">{banner.from.name} 대원이 팀 {banner.teamCode}에 초대했어요</p>

@@ -11,9 +11,9 @@ import type { DestChangeReason } from "@/lib/domain/stateMachine";
 export const Route = createFileRoute("/transport")({
   head: () => ({
     meta: [
-      { title: "이송 중 · 세이브타임" },
+      { title: "이송 중 · 골든타임즈" },
       { name: "description", content: "확정한 병원으로 이동하고 응급실 입구에서 도착 처리해요." },
-      { property: "og:title", content: "이송 중 · 세이브타임" },
+      { property: "og:title", content: "이송 중 · 골든타임즈" },
       { property: "og:description", content: "경로 안내, 남은 시간, 승인 취소 경보, 목적지 변경, 도착 처리" },
     ],
   }),
