@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { Navigation, MapPin, AlertTriangle, Phone, Timer, Send } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneScreen, BigButton, Notice, Pill, SectionTitle } from "@/components/phone";
-import { ProgressStrip, DemoTools } from "@/components/progress";
-import { useEngine, actions, hospital, latestReq } from "@/lib/engine";
+import { ProgressStrip } from "@/components/progress";
+import { useEngine, actions, hospital, latestReq, type Result } from "@/lib/engine";
 import { useTransport } from "@/lib/transport-store";
 import type { DestChangeReason } from "@/lib/domain/stateMachine";
 
@@ -29,42 +29,42 @@ function TransportPage() {
   const t = useTransport();
   const nav = useNavigate();
   const h = e.confirmedId ? hospital(e.confirmedId) : null;
-  const [left, setLeft] = useState(h?.min ?? 0);
-  const [near, setNear] = useState(false);
+  const [manualNear, setManualNear] = useState(false);
   const [destOpen, setDestOpen] = useState(false);
   const press = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => { if (!e.status) nav({ to: "/" }); }, [e.status, nav]);
-  useEffect(() => { setLeft(h?.min ?? 0); setNear(false); }, [h?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    const id = setInterval(() => setLeft((m) => Math.max(0, m - 1)), 2500);
-    return () => clearInterval(id);
-  }, []);
-  useEffect(() => { if (left === 0 && h) setNear(true); }, [left, h]);
+  useEffect(() => { setManualNear(false); }, [h?.id]);
   useEffect(() => { if (e.alert) navigator.vibrate?.([300, 100, 300]); }, [e.alert]);
+  useEffect(() => { if (e.arriveRequested) toast("병원에서 도착 확인을 요청했어요 · 도착 처리를 눌러 주세요"); }, [e.arriveRequested]);
 
-  const run = (r: { ok: boolean; error?: string }) => { if (!r.ok && r.error) toast.error(r.error); return r.ok; };
-  if (!h) return null;
+  const run = async (p: Promise<Result>) => { const r = await p; if (!r.ok) toast.error(r.error); return r.ok; };
+  if (!h) return <PhoneScreen title="이송 중" subtitle="목적지 병원을 불러오는 중이에요"><ProgressStrip /></PhoneScreen>;
   const req = latestReq(h.id);
-  const go = h.min ? 1 - left / h.min : 1;
+  // 남은 시간: 서버가 담당 단말의 내비 값으로 계산한 분 (팀원 모두 같은 값, SFR-121·132)
+  const left = e.etaMin ?? h.min;
+  // 응급실 입구 200m 안이면 도착 버튼을 켠다 (병원이 도착 확인을 눌러도)
+  const near = manualNear || e.arriveRequested || (e.remainingM !== null && e.remainingM <= 200);
+  const total = Math.max(h.min, 1);
+  const go = near ? 1 : Math.min(1, Math.max(0, 1 - left / total));
 
   const arrive = () => {
     t.setConfirmed({ id: h.id, name: h.name, km: h.km, min: h.min, ...(req?.note ? { note: req.note } : {}) });
     t.setTimeline({ ...t.timeline, departAt: t.timeline.departAt ?? new Date(e.history.find((x) => x.to === "moving")?.at ?? Date.now()), arriveAt: new Date() });
-    run(actions.arrive());
+    void run(actions.arrive(e.arriveRequested ? "hospital" : "button"));
   };
 
   return (
     <PhoneScreen
       title={near ? `${h.name} 응급실 입구` : `${h.name} · ${left}분 남음`}
-      subtitle={near ? "응급실 입구 30m 안이에요" : "이송 중 · 위치 기록 (화면 맨 위 표시 중)"}
+      subtitle={near ? "응급실 입구 근처예요" : e.navIsMe ? "이송 중 · 이 폰이 경로 안내·위치 기록 담당" : "이송 중 · 경로 안내는 담당 폰에서"}
       badge={<Pill tone={near ? "ok" : "call"} dot={false} className="bg-primary/8 text-primary">{h.km}km</Pill>}
       footer={
         <div className="space-y-2">
           {near ? (
             <BigButton variant="success" size="lg" className="text-lg" onClick={arrive}>도착 처리</BigButton>
           ) : (
-            <BigButton variant="outline" onClick={() => setNear(true)}>도착했어요 (입구 30m 안에서 켜져요)</BigButton>
+            <BigButton variant="outline" onClick={() => setManualNear(true)}>도착했어요 (입구 200m 안에서 켜져요)</BigButton>
           )}
           <BigButton variant="outline" onClick={() => window.confirm("이송을 취소할까요? 확정 병원에도 취소가 전달돼요.") && run(actions.cancel())}>이송 취소</BigButton>
         </div>
@@ -97,10 +97,11 @@ function TransportPage() {
         </div>
         <Pill tone="ok">병원 화면에 1분마다 전달</Pill>
       </div>
-      {req?.note && <div className="mt-3"><Notice tone="info">병원 안내 · "{req.note}"</Notice></div>}
+      {(req?.note ?? e.confirmed?.memo) && <div className="mt-3"><Notice tone="info">병원 안내 · "{req?.note ?? e.confirmed?.memo}"</Notice></div>}
+      {e.remainingM !== null && <p className="mt-2 text-xs text-muted-foreground">입구까지 약 {e.remainingM >= 1000 ? `${(e.remainingM / 1000).toFixed(1)}km` : `${e.remainingM}m`}</p>}
 
-      <a href={`tel:${h.erPhone}`} className="tile mt-3 flex h-12 w-full items-center justify-center gap-2 px-4 text-[15px] font-bold transition hover:bg-surface">
-        <Phone className="size-4.5 text-accent-deep" /> {h.name} 응급실 직통 {h.erPhone}
+      <a href={`tel:${e.confirmed?.erPhone ?? h.erPhone}`} className="tile mt-3 flex h-12 w-full items-center justify-center gap-2 px-4 text-[15px] font-bold transition hover:bg-surface">
+        <Phone className="size-4.5 text-accent-deep" /> {h.name} 응급실 직통 {e.confirmed?.erPhone ?? h.erPhone}
       </a>
 
       <div className="mt-3 grid grid-cols-2 gap-2">
@@ -120,13 +121,12 @@ function TransportPage() {
           <p className="mb-2.5 text-sm font-bold">변경 사유 (1번만 바꿀 수 있어요)</p>
           <div className="grid grid-cols-2 gap-1.5">
             {DEST.map((d) => (
-              <button key={d.k} className="chip justify-center py-2.5 text-sm hover:bg-surface-2" onClick={() => { setDestOpen(false); run(actions.changeDestination(d.k)); }}>{d.l}</button>
+              <button key={d.k} className="chip justify-center py-2.5 text-sm hover:bg-surface-2" onClick={() => { setDestOpen(false); void run(actions.changeDestination(d.k)); }}>{d.l}</button>
             ))}
           </div>
         </div>
       )}
       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">환자 상태가 바뀌면 '환자 정보 보내기'에서 고쳐서 보내면 확정 병원에 강조 표시돼요. 병원에는 구급차 위치를 보내지 않고 도착 예상 시간만 보내요.</p>
-      <DemoTools showConfirmed />
     </PhoneScreen>
   );
 }

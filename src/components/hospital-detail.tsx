@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { X, Phone, BedDouble, Stethoscope, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { BigButton, Pill } from "@/components/phone";
 import { bedAvail, capCount, type Hospital } from "@/lib/hospitals";
+import { loadHospitalDetail } from "@/lib/engine";
 import { cn } from "@/lib/utils";
 
 /**
@@ -26,6 +28,10 @@ export function HospitalDetail({
   /** 전화 확인 (SFR-032) */
   onPhone?: () => void;
 }) {
+  // 열 때 서버에서 진료과·진료가능 항목·대표 전화를 읽어 채운다 (SFR-007)
+  useEffect(() => {
+    if (h.id) void loadHospitalDetail(h.id);
+  }, [h.id]);
   const cc = capCount(h);
   const beds = [
     { k: "응급실", v: h.er },
@@ -89,7 +95,9 @@ export function HospitalDetail({
               <span className="flex items-center gap-1.5"><Stethoscope className="size-3.5" /> 중증질환 진료가능 항목</span>
               <span className="text-sm font-extrabold tracking-normal text-foreground tabular-nums">{cc.available}/{cc.total}</span>
             </p>
-            {h.caps.length === 0 ? (
+            {h.caps.length === 0 && cc.total > 0 ? (
+              <p className="mt-2 text-sm text-muted-foreground">불러오는 중…</p>
+            ) : h.caps.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">공공 데이터에 없는 병원이에요 · 전화로 확인해야 알 수 있어요</p>
             ) : (
               <ul className="mt-2.5 space-y-1">
@@ -121,9 +129,9 @@ export function HospitalDetail({
             <a href={`tel:${h.erPhone}`} className="btn-solid-accent mt-2.5 flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[15px] font-bold text-accent-foreground">
               <Phone className="size-4.5" /> 응급실 직통 {h.erPhone}
             </a>
-            <a href={`tel:${h.mainPhone}`} className="tile mt-2 flex h-12 w-full items-center justify-center gap-2 px-4 text-[15px] font-bold transition hover:bg-surface">
+            {h.mainPhone && <a href={`tel:${h.mainPhone}`} className="tile mt-2 flex h-12 w-full items-center justify-center gap-2 px-4 text-[15px] font-bold transition hover:bg-surface">
               <Phone className="size-4.5 text-muted-foreground" /> 대표 {h.mainPhone}
-            </a>
+            </a>}
           </div>
 
           <div className="space-y-2 pt-1">

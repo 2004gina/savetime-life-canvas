@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, Clock, PhoneCall, MapPin, ChevronRight, BellRing } from "lucide-react";
 import { PhoneScreen, BigButton, SectionTitle, Pill, Notice, IconTile } from "@/components/phone";
-import { ProgressStrip, DemoTools } from "@/components/progress";
-import { useEngine, actions, now, hospital, phoneCandidates, REASON_LABEL, CLOSE_LABEL, type Hreq } from "@/lib/engine";
-import { HOSPITALS, RESPONSE_LIMIT_SEC, RADIUS_STEPS, capCount } from "@/lib/hospitals";
+import { ProgressStrip } from "@/components/progress";
+import { useEngine, actions, now, hospital, nearbyHospitals, phoneCandidates, REASON_LABEL, CLOSE_LABEL, type Hreq, type Result } from "@/lib/engine";
+import { RESPONSE_LIMIT_SEC, RADIUS_STEPS, capCount } from "@/lib/hospitals";
 import { HospitalDetail } from "@/components/hospital-detail";
 import { cn } from "@/lib/utils";
 
@@ -55,16 +55,18 @@ function RequestPage() {
     seen.current = live.length;
   }, [live.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const run = (r: { ok: boolean; error?: string }) => { if (!r.ok && r.error) toast.error(r.error); return r.ok; };
+  const run = async (p: Promise<Result>) => { const r = await p; if (!r.ok) toast.error(r.error); return r.ok; };
 
   /** 병원 상세 → 전화 확인 (SFR-032) */
   const phone = (id: string) => {
     setDetail(null);
-    if (run(actions.startPhone(id))) nav({ to: "/call/$hospitalId", params: { hospitalId: id } });
+    void run(actions.startPhone(id)).then((ok) => {
+      if (ok) void nav({ to: "/call/$hospitalId", params: { hospitalId: id } });
+    });
   };
 
   // 거리순 목록: 승인 칸에 없는 병원 + 각 병원의 최근 요청 상태
-  const nearby = HOSPITALS.filter((h) => h.km <= e.radius && !live.some((a) => a.hospitalId === h.id)).map((h) => {
+  const nearby = nearbyHospitals().filter((h) => !live.some((a) => a.hospitalId === h.id)).map((h) => {
     const req = [...e.hreqs].reverse().find((r) => r.hospitalId === h.id);
     return { h, req };
   }).filter(({ h, req }) => !(e.excluded.includes(h.id) && req?.status !== "waiting"));
@@ -191,7 +193,6 @@ function RequestPage() {
       </div>
       {excludedNames.length > 0 && <p className="mt-3 text-xs text-muted-foreground">거절 · 승인 취소한 {excludedNames.join(", ")}은 목록에서 빠져요</p>}
 
-      <DemoTools />
 
       {pick && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-primary/45 backdrop-blur-sm sm:items-center" onClick={() => setPick(null)}>
@@ -202,7 +203,7 @@ function RequestPage() {
             <p className="mt-2 text-sm text-muted-foreground">확정하면 다른 병원 요청은 닫혀요</p>
             <div className="mt-5 flex gap-2">
               <BigButton variant="outline" onClick={() => setPick(null)}>취소</BigButton>
-              <BigButton variant="success" onClick={() => { run(actions.confirm(pick)); setPick(null); }}>확정</BigButton>
+              <BigButton variant="success" onClick={() => { void run(actions.confirm(pick)); setPick(null); }}>확정</BigButton>
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ export const hasActiveTransport = () => {
 export const isLastMember = (a: AuthState = getAuth()) => (a.duty?.members.length ?? 0) === 0;
 
 export async function leave(kind: "duty_end" | "logout" | "withdrawal"): Promise<string | null> {
-  // 이송은 아직 앱 안 엔진이 흉내 낸다 (② PR 에서 서버로). 이 기기의 진행 중 이송도 비운다
+  // 팀의 마지막 대원이면 서버가 진행 중 이송을 '취소'로 끝낸다. 이 기기 화면만 비운다
   if (hasActiveTransport()) actions.reset();
   if (kind === "withdrawal") return withdrawServer();
   await logoutServer();
