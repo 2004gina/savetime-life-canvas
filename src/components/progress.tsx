@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { ChevronDown, FastForward, Wrench } from "lucide-react";
-import { toast } from "sonner";
-import { useEngine, actions, hospital, REASON_LABEL, HREQ_LABEL, CLOSE_LABEL } from "@/lib/engine";
+import { ChevronDown } from "lucide-react";
+import { useEngine, REASON_LABEL } from "@/lib/engine";
 import type { TransportStatus } from "@/lib/domain/stateMachine";
 import { cn } from "@/lib/utils";
 
@@ -67,50 +66,6 @@ export function ProgressStrip() {
             </li>
           ))}
         </ol>
-      )}
-    </div>
-  );
-}
-
-/** 병원 웹 · 타이머를 흉내 내는 시연 도구 (서버 연결 뒤 삭제) */
-export function DemoTools({ showConfirmed }: { showConfirmed?: boolean }) {
-  const e = useEngine();
-  const [open, setOpen] = useState(false);
-  const run = (r: { ok: boolean; error?: string } | { ok: true; value: unknown }) => {
-    if (!r.ok && "error" in r) toast.error(r.error);
-  };
-  const rows = e.hreqs.filter((h) => (showConfirmed ? h.status === "confirmed" : h.round === e.round || h.status === "approved"));
-  return (
-    <div className="mt-7 rounded-xl border border-dashed border-border-strong bg-surface/70 p-3">
-      <button className="flex w-full items-center justify-between text-xs font-bold text-muted-foreground" onClick={() => setOpen(!open)}>
-        <span className="flex items-center gap-1.5"><Wrench className="size-3.5" /> 시연 도구 (병원 웹 · 타이머 흉내)</span>
-        <ChevronDown className={cn("size-4 transition", open && "rotate-180")} />
-      </button>
-      {open && (
-        <div className="mt-3 space-y-2.5 text-sm">
-          <div className="flex flex-wrap gap-1.5">
-            <button className="chip hover:bg-surface-2" onClick={() => actions.fastForward(30)}><FastForward className="size-3.5" /> 30초 지나기</button>
-            <button className="chip hover:bg-surface-2" onClick={() => actions.fastForward(120)}><FastForward className="size-3.5" /> 2분 지나기</button>
-            <label className="chip cursor-pointer">
-              <input type="checkbox" checked={e.autoReply} onChange={(ev) => actions.setAutoReply(ev.target.checked)} className="accent-[var(--color-accent)]" />
-              병원 자동 응답
-            </label>
-          </div>
-          {rows.map((h) => (
-            <div key={`${h.hospitalId}-${h.round}`} className="flex flex-wrap items-center gap-1.5 rounded-lg bg-card px-2.5 py-2">
-              <span className="w-28 truncate text-sm font-semibold">{hospital(h.hospitalId).name}</span>
-              <span className="text-xs text-muted-foreground">{h.status === "closed" && h.closeReason ? CLOSE_LABEL[h.closeReason] : HREQ_LABEL[h.status]}</span>
-              <span className="flex-1" />
-              {h.status === "waiting" && <>
-                <button className="rounded-md bg-success-soft px-2.5 py-1 text-xs font-bold text-success" onClick={() => run(actions.hospitalApprove(h.hospitalId))}>승인</button>
-                <button className="rounded-md bg-destructive/10 px-2.5 py-1 text-xs font-bold text-destructive" onClick={() => run(actions.hospitalReject(h.hospitalId))}>거절</button>
-              </>}
-              {(h.status === "approved" || h.status === "confirmed") && (
-                <button className="rounded-md bg-destructive/10 px-2.5 py-1 text-xs font-bold text-destructive" onClick={() => run(actions.hospitalCancelApproval(h.hospitalId))}>승인 취소</button>
-              )}
-            </div>
-          ))}
-        </div>
       )}
     </div>
   );

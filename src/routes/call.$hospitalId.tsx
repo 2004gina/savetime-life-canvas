@@ -1,20 +1,15 @@
-import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Phone, CheckCircle2, PhoneOff, SkipForward, XCircle, Info } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneScreen, BigButton, SectionTitle, Notice, Pill, IconTile } from "@/components/phone";
-import { ProgressStrip, DemoTools } from "@/components/progress";
-import { HOSPITALS, RESPONSE_LIMIT_SEC, capCount } from "@/lib/hospitals";
+import { ProgressStrip } from "@/components/progress";
+import { RESPONSE_LIMIT_SEC, capCount } from "@/lib/hospitals";
 import { HospitalDetail } from "@/components/hospital-detail";
-import { useEngine, actions, now, hospital, openRemain } from "@/lib/engine";
+import { useEngine, actions, now, hospital, openRemain, loadHospitalDetail, type Result } from "@/lib/engine";
 import type { PhoneProceedReason } from "@/lib/domain/stateMachine";
 
 export const Route = createFileRoute("/call/$hospitalId")({
-  loader: ({ params }) => {
-    const h = HOSPITALS.find((x) => x.id === params.hospitalId);
-    if (!h) throw notFound();
-    return h;
-  },
   head: () => ({
     meta: [
       { title: "전화 확인 · 골든타임즈" },
@@ -31,8 +26,13 @@ const PROCEED: { k: PhoneProceedReason; l: string }[] = [
 ];
 
 function CallPage() {
-  const h = Route.useLoaderData();
+  const { hospitalId } = Route.useParams();
   const e = useEngine();
+  const h = hospital(hospitalId);
+  // 병원 상세(병상 3종·대표 전화·진료가능 항목)를 서버에서 읽는다 (SFR-007·033)
+  useEffect(() => {
+    void loadHospitalDetail(hospitalId);
+  }, [hospitalId]);
   const nav = useNavigate();
   const [proceed, setProceed] = useState<"fail" | "skip" | null>(null);
   const [detail, setDetail] = useState<string | null>(null);
@@ -41,7 +41,7 @@ function CallPage() {
     if (!e.status) nav({ to: "/" });
   }, [e.status, nav]);
 
-  const run = (r: { ok: boolean; error?: string }) => { if (!r.ok && r.error) toast.error(r.error); };
+  const run = async (p: Promise<Result>) => { const r = await p; if (!r.ok) toast.error(r.error); };
   const remain = RESPONSE_LIMIT_SEC - Math.floor((now() - e.roundSentAt) / 1000);
   const open = openRemain();
   const approved = e.hreqs.filter((r) => r.status === "approved");
@@ -52,7 +52,7 @@ function CallPage() {
       title="전화 확인"
       subtitle={`${h.name} · ${h.km}km · 약 ${h.min}분`}
       badge={<Pill tone="call" dot={false} className="bg-primary/8 text-primary">응급실 직통</Pill>}
-      footer={<BigButton variant="outline" onClick={() => (inPhone ? run(actions.phoneDismiss()) : nav({ to: "/request" }))}>← 요청 화면으로</BigButton>}
+      footer={<BigButton variant="outline" onClick={() => (inPhone ? void run(actions.phoneDismiss()) : nav({ to: "/request" }))}>← 요청 화면으로</BigButton>}
     >
       <ProgressStrip />
       {open ? (
@@ -95,7 +95,7 @@ function CallPage() {
           <p className="mb-2.5 text-sm font-bold">{proceed === "fail" ? "연결 실패" : "확인 생략"} 사유를 고르면 이 병원으로 출발해요</p>
           <div className="grid grid-cols-2 gap-1.5">
             {PROCEED.map((p) => (
-              <button key={p.k} className="chip justify-center py-2.5 text-sm hover:bg-surface-2" onClick={() => run(actions.phoneProceed(p.k))}>{p.l}</button>
+              <button key={p.k} className="chip justify-center py-2.5 text-sm hover:bg-surface-2" onClick={() => void run(actions.phoneProceed(p.k, proceed === "skip" ? "skipped" : "no_answer"))}>{p.l}</button>
             ))}
           </div>
         </div>
@@ -104,7 +104,6 @@ function CallPage() {
       <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
         출발하면 열려 있던 요청은 닫히고 병원 웹에 "요청 종료"가 떠요. 통화 중 승인이 오면 진동으로 알려요.
       </p>
-      <DemoTools />
 
       {detail && (
         <HospitalDetail
@@ -112,7 +111,7 @@ function CallPage() {
           approved
           note={[...e.hreqs].reverse().find((r) => r.hospitalId === detail)?.note}
           onClose={() => setDetail(null)}
-          onConfirm={() => { setDetail(null); if (window.confirm(`${hospital(detail).name}으로 확정할까요?`)) run(actions.confirm(detail)); }}
+          onConfirm={() => { setDetail(null); if (window.confirm(`${hospital(detail).name}으로 확정할까요?`)) void run(actions.confirm(detail)); }}
         />
       )}
     </PhoneScreen>

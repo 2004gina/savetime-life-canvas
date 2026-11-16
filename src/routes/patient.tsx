@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Building2, Hospital, Stethoscope, AlertTriangle, ArrowLeft, ArrowRight, UserCheck } from "lucide-react";
 import { PhoneScreen, BigButton, SectionTitle, Label, Notice, StepDots, Pill } from "@/components/phone";
 import { useTransport, filledCount, REQUIRED_FIELDS, UNKNOWN, type Patient, type Grade } from "@/lib/transport-store";
-import { HOSPITALS, isTarget, START_RADIUS } from "@/lib/hospitals";
-import { useEngine, actions } from "@/lib/engine";
+import { START_RADIUS } from "@/lib/hospitals";
+import { useEngine, actions, previewTargets } from "@/lib/engine";
 import { ACTIVE } from "@/lib/domain/stateMachine";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -38,15 +38,24 @@ function PatientPage() {
   const e = useEngine();
   const active = !!e.status && ACTIVE.includes(e.status);
   const p = patient;
-  const send = () => {
-    const r = active ? actions.updateAssessment() : actions.create(p.grade);
+  const [sending, setSending] = useState(false);
+  const send = async () => {
+    setSending(true);
+    const r = active ? await actions.updateAssessment(p) : await actions.create(p.grade, p);
+    setSending(false);
     if (!r.ok) { toast.error(r.error); return; }
     if (active) { toast.success("변경 사항을 병원에 보냈어요 · 강조 표시돼요"); nav({ to: e.status === "moving" ? "/transport" : "/request" }); }
   };
   const set = (k: keyof Patient, v: string | Grade) => setPatient({ ...p, [k]: v });
   const count = filledCount(p);
   const allDone = count === REQUIRED_FIELDS.length;
-  const targets = HOSPITALS.filter((h) => h.km <= START_RADIUS && isTarget(h, p.grade)).length;
+  // 'n곳에 요청합니다': 서버가 지금 위치·등급으로 센다 (SFR-163)
+  const [targets, setTargets] = useState<number | null>(null);
+  useEffect(() => {
+    let alive = true;
+    void previewTargets(p.grade).then((n) => alive && setTargets(n));
+    return () => { alive = false; };
+  }, [p.grade]);
 
   const fillUnknown = () => {
     const next = { ...p };
@@ -92,7 +101,7 @@ function PatientPage() {
               </BigButton>
             )}
           </div>
-          <BigButton size="lg" className="mt-2" disabled={!allDone} onClick={send}>
+          <BigButton size="lg" className="mt-2" disabled={!allDone || sending} onClick={() => void send()}>
             {active ? "변경 사항 보내기" : "병원에 요청"}
           </BigButton>
           <p className="mt-2 text-center text-xs text-muted-foreground">
@@ -204,7 +213,7 @@ function PatientPage() {
             <UserCheck className="size-4" /> 나머지 확인 불가로 보내기
           </BigButton>
           <div className="mt-5 rounded-xl border border-border bg-surface px-4 py-3.5">
-            <p className="text-sm font-extrabold">{p.grade ? `${p.grade} 이상 · ` : "모든 등급 · "}반경 {START_RADIUS}km 안 {targets}곳에 요청합니다</p>
+            <p className="text-sm font-extrabold">{p.grade ? `${p.grade} 이상 · ` : "모든 등급 · "}반경 {START_RADIUS}km 안 {targets ?? "-"}곳에 요청합니다</p>
             <p className="mt-1 text-xs text-muted-foreground">등급 바꾸기는 1단계에서</p>
           </div>
         </>

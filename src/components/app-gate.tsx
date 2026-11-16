@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useAuth, getAuth, currentAccount, dutyExpired, versionBelow, APP_VERSION, isIOS, type AuthState } from "@/lib/auth-store";
-import { useEngine } from "@/lib/engine";
+import { useEngine, loadCurrent } from "@/lib/engine";
 import { hasActiveTransport, leave } from "@/lib/duty";
 import { loadConfig, resumeSession } from "@/lib/auth-server";
 
@@ -48,6 +48,12 @@ export function AppGate() {
     const t = setInterval(() => void loadConfig(), 60_000);
     return () => clearInterval(t);
   }, []);
+
+  // 로그인·근무가 준비되면 팀의 진행 중 이송을 서버에서 불러온다 (앱을 다시 켜도 이어서, SFR-133)
+  const ready = !!a.tokens && !!a.duty?.started;
+  useEffect(() => {
+    if (ready) void loadCurrent();
+  }, [ready, a.duty?.teamId]);
 
   // 이송 건 상태 → 화면
   const prev = useRef<string>("");
